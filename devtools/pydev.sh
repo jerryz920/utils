@@ -16,6 +16,7 @@ install_base()
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
   sudo apt-get install -y vim git curl
+  cp $WORKDIR/python/bashrc ~/.bashrc
 }
 
 

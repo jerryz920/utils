@@ -1,0 +1,124 @@
+"==================================================
+""                my vimrc
+"==================================================
+"
+"" general setting
+set backspace=2
+set linebreak
+set whichwrap=b,s,<,>,[,]
+set listchars=tab:.\ ,trail:-
+set hidden
+set scrolloff=7
+set ignorecase
+set noerrorbells
+set novisualbell
+set t_vb=
+set wildmenu
+set list
+set showmatch
+set mat=1 "match time
+set smartindent
+set shiftwidth=2
+set autoindent
+set completeopt=longest,menu
+set autoread
+set gdefault
+" status setting
+set statusline=[%F]%y%r%m%*%=[Line:%l/%L,Column:%c][%p%%]
+set laststatus=2
+set ruler
+"let mapleader='\'
+"set sessionoptions-=curdir
+"set sessionoptions+=sesdir
+
+set undofile
+
+filetype off                   " required!
+
+
+" let Vundle manage Vundle
+" required! 
+
+" My Bundles here:
+set rtp+=~/.vim/bundle/Vundle.vim,~/.vim/bundle/YouCompleteMe
+call vundle#begin()
+"
+" original repos on github
+"Bundle 'scrooloose/syntastic'
+"Plugin 'Valloric/YouCompleteMe'
+Plugin 'fatih/vim-go'
+Plugin 'nsf/gocode', {'rtp': 'vim/'}
+"Bundle 'Lokaltog/vim-easymotion'
+"Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+"Bundle 'scrooloose/syntastic'
+" vim-scripts repos
+"Bundle 'L9'
+"Bundle 'FuzzyFinder'
+" ...
+call vundle#end()
+
+
+filetype plugin indent on     " required!
+
+
+"
+" General programming setting
+"
+syn on
+filetype plugin on
+filetype indent on
+"cscope setting
+set cscopequickfix=s-,c-,d-,i-,t-,e-,g-
+set cscopetag
+
+autocmd Filetype c,cpp,cc set cinoptions=l1
+autocmd Filetype c,cpp,cc let c_gnu=1
+autocmd FileType c,cc,cpp,yacc,lex,tcl set shiftwidth=2 | set expandtab | set softtabstop=2
+autocmd FileType asm set shiftwidth=8 | set expandtab | set softtabstop=8
+
+syn match Braces display '[{}()\[\]]'
+hi Braces ctermfg=blue
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+" Haskell settings
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+let hs_highlight_delimiters=1
+let hs_highlight_boolean=1
+let hs_highlight_types=1
+let g:haddock_browser="/usr/bin/chromium"
+let g:ghc="/usr/bin/ghc"
+autocmd BufEnter *.hs compiler ghc
+autocmd FileType haskell set expandtab
+"let hs_highlight_more_types=1
+"
+
+" Send more characters for redraws
+set ttyfast
+"
+" " Enable mouse use in all modes
+set mouse=r
+"
+" " Set this to the name of your terminal that supports mouse codes.
+" " Must be one of: xterm, xterm2, netterm, dec, jsbterm, pterm
+set ttymouse=xterm2
+
+set viminfo='10,\"100,:20,%,n~/.viminfo
+if has("autocmd")
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+au FileType go nmap <leader>r <Plug>(go-run)
+au FileType go nmap <leader>b <Plug>(go-build)
+au FileType go nmap <leader>t <Plug>(go-test)
+au FileType go nmap <leader>c <Plug>(go-coverage)
+au FileType go nmap <Leader>ds <Plug>(go-def-split)
+au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
+au FileType go nmap <Leader>dt <Plug>(go-def-tab)
+au FileType go nmap <Leader>gd <Plug>(go-doc)
+au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+au FileType go nmap <Leader>gb <Plug>(go-doc-browser)
+au FileType go nmap <Leader>s <Plug>(go-implements)
+au FileType go nmap <Leader>i <Plug>(go-info)
+au FileType go nmap <Leader>e <Plug>(go-rename)
+
+imap jj <Esc>
