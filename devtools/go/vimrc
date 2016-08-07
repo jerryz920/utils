@@ -45,7 +45,7 @@ call vundle#begin()
 "
 " original repos on github
 "Bundle 'scrooloose/syntastic'
-"Plugin 'Valloric/YouCompleteMe'
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'fatih/vim-go'
 Plugin 'nsf/gocode', {'rtp': 'vim/'}
 "Bundle 'Lokaltog/vim-easymotion'
@@ -79,19 +79,6 @@ autocmd FileType asm set shiftwidth=8 | set expandtab | set softtabstop=8
 syn match Braces display '[{}()\[\]]'
 hi Braces ctermfg=blue
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""
-" Haskell settings
-"""""""""""""""""""""""""""""""""""""""""""""""""""
-let hs_highlight_delimiters=1
-let hs_highlight_boolean=1
-let hs_highlight_types=1
-let g:haddock_browser="/usr/bin/chromium"
-let g:ghc="/usr/bin/ghc"
-autocmd BufEnter *.hs compiler ghc
-autocmd FileType haskell set expandtab
-"let hs_highlight_more_types=1
-"
-
 " Send more characters for redraws
 set ttyfast
 "
@@ -106,6 +93,14 @@ set viminfo='10,\"100,:20,%,n~/.viminfo
 if has("autocmd")
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
+
+let g:ycm_autoclose_preview_window_after_completion=1
+nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+let g:ycm_enable_diagnostic_signs = 0
+let g:ycm_confirm_extra_conf = 0 " I am responsible for whatever torjan
+
+let g:go_fmt_command = "goimports"
 
 au FileType go nmap <leader>r <Plug>(go-run)
 au FileType go nmap <leader>b <Plug>(go-build)
