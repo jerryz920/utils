@@ -46,6 +46,25 @@ void dump_info() {
 }
 
 
+/// similarly we could do simple task if we only need if addresses:
+//#include <arpa/inet.h>
+//#include <netinet/in.h>
+//void dump_info() {
+//    struct ifaddrs *addrs, *cur;
+//    getifaddrs(&addrs);
+//    cur = addrs;
+//    while (cur) {
+//        char buf[INET_ADDRSTRLEN];
+//        if (cur->ifa_addr->sa_family == AF_INET) {
+//            struct sockaddr_in* addr = (struct sockaddr_in*) cur->ifa_addr;
+//            inet_ntop(AF_INET, &addr->sin_addr, buf, INET_ADDRSTRLEN);
+//            printf("%s %s\n", cur->ifa_name, buf);
+//        }
+//        cur = cur->ifa_next;
+//    }
+//    freeifaddrs(addrs);
+//}
+//
 
 int main(int argc, char **argv) {
 
