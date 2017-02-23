@@ -1,4 +1,4 @@
-package gcd
+package numtheory
 
 import (
 	"fmt"

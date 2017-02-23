@@ -1,4 +1,4 @@
-package gcd
+package numtheory
 
 //// returns GCD(a,b) and a solution of ax + by = GCD(a,b)
 func ExtendedGcd(a, b int64) (int64, int64, int64) {
