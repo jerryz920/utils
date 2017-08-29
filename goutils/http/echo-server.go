@@ -19,6 +19,26 @@ type EchoHandlerConfig struct {
 	Filter  func([]byte) []byte
 }
 
+type LoggedResponseWriter struct {
+	w ghttp.ResponseWriter
+}
+
+func (l LoggedResponseWriter) Write(b []byte) {
+	log.Infof("Response Content: %s", string(b))
+	l.w.Write(b)
+}
+
+func (l LoggedResponseWriter) WriteHeader(h int) {
+	log.Infof("Response Status: %d", h)
+	l.w.WriteHeader(h)
+}
+
+func (l LoggedResponseWriter) Header() ghttp.Header {
+	return l.w.Header()
+}
+
+type LoggedHandlerFunc func(w LoggedResponseWriter, r *ghttp.Request)
+
 func NewEchoServer() *EchoServer {
 	r := mux.NewRouter()
 	h := GetEchoHandler(&EchoHandlerConfig{
@@ -49,7 +69,16 @@ func ProcessRequest(r *ghttp.Request) []byte {
 	}
 }
 
-func GetEchoHandler(c *EchoHandlerConfig) func(ghttp.ResponseWriter, *ghttp.Request) {
+func InspectHeader(r *ghttp.Request) {
+	log.Info("***New Request***")
+	log.Info(r.Method, " ", r.URL.String())
+	log.Info("--------Request Headers------")
+	for h, v := range r.Header {
+		log.Info(h, ":", v)
+	}
+}
+
+func GetEchoHandler(c *EchoHandlerConfig) ghttp.HandlerFunc {
 
 	// Make a copy so it references a new memory variable
 	retCode := c.RetCode
@@ -74,4 +103,19 @@ func GetEchoHandler(c *EchoHandlerConfig) func(ghttp.ResponseWriter, *ghttp.Requ
 
 func (s *EchoServer) ListenAndServe(addr string) {
 	ghttp.ListenAndServe(addr, s.R)
+}
+
+func (s *EchoServer) AddRoute(path string, handler ghttp.HandlerFunc) {
+	s.R.HandleFunc(path, func(w ghttp.ResponseWriter, r *ghttp.Request) {
+		InspectHeader(r)
+		handler(w, r)
+	})
+}
+
+func (s *EchoServer) AddLoggedRoute(path string, handler LoggedHandlerFunc) {
+	s.R.HandleFunc(path, func(w ghttp.ResponseWriter, r *ghttp.Request) {
+		lw := LoggedResponseWriter{w}
+		InspectHeader(r)
+		handler(lw, r)
+	})
 }
