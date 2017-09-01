@@ -1,0 +1,2 @@
+#define CmakeOptionString "@SetInCmake@"
+#cmakedefine FOO_ENABLE
