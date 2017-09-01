@@ -6,6 +6,19 @@ set (xxxx_VERSION_MAJOR 1)
 set (xxxx_VERSION_MINOR 0)
 set (SetInCmake "hello option")
 
+# Note, use cmake -DCMAKE_BUILD_TYPE=Release/Debug to pass debug/release options.
+set(CMAKE_CXX_FLAGS "-Wall -std=c++11")
+# or 
+#add_definitions("-Wall -std=c++11")
+
+# some check list
+#find_program(GOTOOL go)
+#find_package(Boost 1.54 REQUIRED COMPONENTS unit_test_framework system)
+#find_library(CPPREST cpprest)
+#find_library(SSL ssl)
+#find_library(CRYPTO crypto)
+
+
 
 # a list of useful directives so that it can be used 
 
@@ -16,9 +29,11 @@ set (SetInCmake "hello option")
 #    for something that is controlled by cmake, use #cmakedefine, which is controlled by option, e.g.
 option(FOO_ENABLE "enable foo" ON)
 # control flow
-if (FOO_ENABLE)
+if (NOT FOO_ENABLE)
   set (Iamfine 1)
-endif (FOO_ENABLE)
+else (NOT FOO_ENABLE)
+  set (Iamfine 0)
+endif (NOT FOO_ENABLE)
 #
 configure_file (
   "${PROJECT_SOURCE_DIR}/Config.h.in"
