@@ -11,6 +11,22 @@
 #define ARG_TYPE(name) name ## _arg_type
 #define CALL_ARGS(name) name ## _call_args
 
+/// TODO: add things here... Question: can we move to GoogleMock or use
+// variadic template for all the stuff...
+#define DECL_ARGS0(name)
+
+#define DECL_ARGS1(name, t1)
+
+#define DECL_ARGS2(name, t1, t2)
+
+#define DECL_ARGS3(name, t1, t2, t3)
+
+#define DECL_ARGS4(name, t1, t2, t3, t4)
+
+#define DECL_ARGS5(name, t1, t2, t3, t4, t5)
+
+#define DECL_ARGS6(name, t1, t2, t3, t4, t5, t6)
+
 #define MOCK_METHOD0(ret, name, ...)\
   int64_t CALL_COUNT(name) = 0; \
   ret RETURN_VALUE(name); \
