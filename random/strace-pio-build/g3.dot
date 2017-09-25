@@ -1,0 +1,12 @@
+digraph G {
+  S1 [ label = <S<sub>1</sub>> ]
+  S2 [ label = <S<sub>2</sub>> ]
+  S3 [ label = <S<sub>3</sub>> ]
+  S4 [ label = <S<sub>4</sub>> ]
+  S5 [ label = <S<sub>5</sub>> ]
+  C -> S1 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  C -> S2 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  C -> S3 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  C -> S4 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  C -> S5 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+}

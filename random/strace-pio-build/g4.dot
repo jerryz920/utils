@@ -1,0 +1,18 @@
+digraph G {
+  LB1 [ label = <LB<sub>1</sub>> ]
+  LB2 [ label = <LB<sub>2</sub>> ]
+  LB3 [ label = <LB<sub>3</sub>> ]
+  S1 [ label = <S<sub>1</sub>> ]
+  S2 [ label = <S<sub>2</sub>> ]
+  S3 [ label = <S<sub>3</sub>> ]
+  S4 [ label = <S<sub>4</sub>> ]
+  S5 [ label = <S<sub>5</sub>> ]
+  C -> LB1
+  LB1 -> LB2 [ label = <(<sup>2</sup>&frasl;<sub>5</sub>,)> ]
+  LB1 -> LB3 [ label = <(<sup>3</sup>&frasl;<sub>5</sub>,)> ]
+  LB2 -> S1 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  LB2 -> S2 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  LB3 -> S3 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  LB3 -> S4 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+  LB3 -> S5 [ label = <(<sup>1</sup>&frasl;<sub>5</sub>,)> ]
+}

@@ -1,0 +1,6 @@
+digraph G {
+  A -> B [ label = "(1,)" ]
+  B -> C [ label = "(1,)" ]
+  D -> C [ label = "(2,5)"]
+  E -> C [ label = "(0,)"]
+}
