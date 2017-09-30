@@ -1,3 +1,4 @@
 digraph G {
+  graph [rankdir=LR];
   A -> B [ label = "(m,n)"]
 }

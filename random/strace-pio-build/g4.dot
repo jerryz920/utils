@@ -1,4 +1,5 @@
 digraph G {
+  graph [rankdir=LR];
   LB1 [ label = <LB<sub>1</sub>> ]
   LB2 [ label = <LB<sub>2</sub>> ]
   LB3 [ label = <LB<sub>3</sub>> ]

@@ -1,4 +1,6 @@
 digraph G {
+  graph [rankdir=LR];
+  {rank=same;A;D;E;}
   A -> B [ label = "(1,)" ]
   B -> C [ label = "(1,)" ]
   D -> C [ label = "(2,5)"]
