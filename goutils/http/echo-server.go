@@ -20,24 +20,18 @@ type EchoHandlerConfig struct {
 }
 
 type LoggedResponseWriter struct {
-	w ghttp.ResponseWriter
+	ghttp.ResponseWriter
 }
 
-func (l LoggedResponseWriter) Write(b []byte) {
+func (l LoggedResponseWriter) Write(b []byte) (int, error) {
 	log.Infof("Response Content: %s", string(b))
-	l.w.Write(b)
+	return l.ResponseWriter.Write(b)
 }
 
 func (l LoggedResponseWriter) WriteHeader(h int) {
 	log.Infof("Response Status: %d", h)
-	l.w.WriteHeader(h)
+	l.ResponseWriter.WriteHeader(h)
 }
-
-func (l LoggedResponseWriter) Header() ghttp.Header {
-	return l.w.Header()
-}
-
-type LoggedHandlerFunc func(w LoggedResponseWriter, r *ghttp.Request)
 
 func NewEchoServer() *EchoServer {
 	r := mux.NewRouter()
@@ -54,27 +48,31 @@ func NewEchoServer() *EchoServer {
 }
 
 func ProcessRequest(r *ghttp.Request) []byte {
-	log.Info("***New Request***")
-	log.Info(r.Method, " ", r.URL.String())
-	log.Info("--------Request Headers------")
-	for h, v := range r.Header {
-		log.Info(h, ":", v)
+	if log.GetLevel() == log.DebugLevel {
+		log.Debug("***New Request***")
+		log.Debug(r.Method, " ", r.URL.String())
+		log.Debug("--------Request Headers------")
+		for h, v := range r.Header {
+			log.Debug(h, ":", v)
+		}
 	}
 	if b, err := ioutil.ReadAll(r.Body); err != nil {
-		log.Info("error in reading body ", err)
+		log.Error("error in reading body ", err)
 		return nil
 	} else {
-		log.Info("Content of body: ", string(b))
+		log.Debug("Content of body: ", string(b))
 		return b
 	}
 }
 
 func InspectHeader(r *ghttp.Request) {
-	log.Info("***New Request***")
-	log.Info(r.Method, " ", r.URL.String())
-	log.Info("--------Request Headers------")
-	for h, v := range r.Header {
-		log.Info(h, ":", v)
+	if log.GetLevel() == log.DebugLevel {
+		log.Debug("***New Request***")
+		log.Debug(r.Method, " ", r.URL.String())
+		log.Debug("--------Request Headers------")
+		for h, v := range r.Header {
+			log.Debug(h, ":", v)
+		}
 	}
 }
 
@@ -107,15 +105,8 @@ func (s *EchoServer) ListenAndServe(addr string) {
 
 func (s *EchoServer) AddRoute(path string, handler ghttp.HandlerFunc) {
 	s.R.HandleFunc(path, func(w ghttp.ResponseWriter, r *ghttp.Request) {
-		InspectHeader(r)
-		handler(w, r)
-	})
-}
-
-func (s *EchoServer) AddLoggedRoute(path string, handler LoggedHandlerFunc) {
-	s.R.HandleFunc(path, func(w ghttp.ResponseWriter, r *ghttp.Request) {
 		lw := LoggedResponseWriter{w}
 		InspectHeader(r)
-		handler(lw, r)
+		handler(&lw, r)
 	})
 }
