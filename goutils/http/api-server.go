@@ -28,8 +28,8 @@ func NewAPIServer(rootFunc ghttp.HandlerFunc) (server *APIServer) {
 	return
 }
 
-func (s *APIServer) ListenAndServe(addr string) {
-	ghttp.ListenAndServe(addr, s.R)
+func (s *APIServer) ListenAndServe(addr string) error {
+	return ghttp.ListenAndServe(addr, s.R)
 }
 
 func (s *APIServer) AddRoute(path string, handler ghttp.HandlerFunc, desc string) {
@@ -39,11 +39,13 @@ func (s *APIServer) AddRoute(path string, handler ghttp.HandlerFunc, desc string
 		handler(&lw, r)
 	})
 	/// Description handler
-	s.R.HandleFunc(filepath.Join(APIPrefix, path),
-		func(w ghttp.ResponseWriter, r *ghttp.Request) {
-			w.WriteHeader(ghttp.StatusOK)
-			w.Write([]byte(desc))
-		})
+	if path != "/" {
+		s.R.HandleFunc(filepath.Join(APIPrefix, path),
+			func(w ghttp.ResponseWriter, r *ghttp.Request) {
+				w.WriteHeader(ghttp.StatusOK)
+				w.Write([]byte(desc + "\n"))
+			})
+	}
 }
 
 func (s *APIServer) ListAPI(w ghttp.ResponseWriter, r *ghttp.Request) {
@@ -63,7 +65,7 @@ func (s *APIServer) ListAPI(w ghttp.ResponseWriter, r *ghttp.Request) {
 		if err != nil {
 			return err
 		}
-		result = append(result, strings.Join(m, ",")+" "+t+" "+p)
+		result = append(result, strings.Join(m, ",")+" "+t+" "+p+"\n")
 		return nil
 	})
 	for _, s := range result {
