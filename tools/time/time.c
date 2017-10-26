@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   gettimeofday(&start, NULL);
   pid_t child = fork();
   if (child == 0) {
-    return execve(argv[1], &argv[1], NULL);
+    return execvp(argv[1], &argv[1]);
   } else {
     int status;
     if (waitpid(child, &status, 0) < 0) {
