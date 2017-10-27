@@ -50,7 +50,8 @@ func NewPmap() *Pmap {
 
 /// NOTE THIS ONLY WORKS ON 64BIT MACHINE!
 func ComputeID(ip string, p1 int, p2 int) uintptr {
-	v1 := binary.BigEndian.Uint64(net.ParseIP(ip).To4()) << 32
+	v0 := binary.BigEndian.Uint32(net.ParseIP(ip).To4())
+	v1 := (uint64(v0)) << 32
 	v2 := uint64(p1) << 16
 	v3 := uint64(p2)
 	return uintptr(v1 + v2 + v3)
@@ -60,9 +61,9 @@ func (m *Pmap) CreatePrincipal(ip string, pmin int, pmax int, p string) {
 	m.counter++
 	index := PrincipalIndex{
 		Index: Index{
-			Id:   ComputeID(ip, pmin, pmax),
+			Id:   ComputeID(ip, pmin, pmax+1),
 			Pmin: pmin,
-			Pmax: pmax,
+			Pmax: pmax + 1,
 		},
 		P: p,
 	}
@@ -76,7 +77,7 @@ func (m *Pmap) CreatePrincipal(ip string, pmin int, pmax int, p string) {
 
 func (m *Pmap) DeletePrincipal(ip string, pmin int, pmax int) error {
 	if tree, ok := m.Identities[ip]; ok {
-		return tree.Delete(Index{pmin, pmax, ComputeID(ip, pmin, pmax)}, false)
+		return tree.Delete(Index{pmin, pmax + 1, ComputeID(ip, pmin, pmax+1)}, false)
 	} else {
 		logrus.Errorf("Principal to delete not found: %s:%d-%d", ip, pmin, pmax)
 		return errors.New("not found")
@@ -96,9 +97,11 @@ func (m *Pmap) GetPrincipal(ip string, port int) (string, error) {
 
 		/// find the inner most one
 		found := indexes[0]
+		fmt.Printf("debug: found index: %v, %d %d\n", found.ID(), found.Range().Start, found.Range().End)
 		for i := 1; i < len(indexes); i++ {
-			if found.Range().Start >= indexes[i].Range().Start &&
-				found.Range().End <= indexes[i].Range().End {
+			fmt.Printf("debug: found index: %v, %d %d\n", indexes[i].ID(), indexes[i].Range().Start, indexes[i].Range().End)
+			if found.Range().Start <= indexes[i].Range().Start &&
+				found.Range().End >= indexes[i].Range().End {
 				found = indexes[i]
 			}
 		}

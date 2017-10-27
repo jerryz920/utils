@@ -76,7 +76,7 @@ func (h *ImageHasher) Put(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewKvStore(rootFunc http.HandlerFunc) *jhttp.APIServer {
-	store, err := eurosys18.NewStore("kvstore")
+	store, err := eurosys18.NewStore("kvstore", true)
 	if err != nil {
 		os.Exit(1)
 	}

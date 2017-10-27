@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"io"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,6 +18,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	debugmode bool = false
+)
+
 type Principal struct {
 	Name    string
 	ImageID string
@@ -27,23 +30,31 @@ type Principal struct {
 	PortMax int
 }
 
-func SerializePrincipal(p *Principal) (string, error) {
-	buf := bytes.Buffer{}
-	encoder := json.NewEncoder(&buf)
-	if err := encoder.Encode(p); err != nil {
-		logrus.Debugf("error encoding principal: %v", *p)
-		return "", err
-	}
-	return buf.String(), nil
+func (p *Principal) Serialize() []string {
+	return []string{p.Name, p.ImageID, p.IP,
+		fmt.Sprintf("%d", p.PortMin),
+		fmt.Sprintf("%d", p.PortMax)}
+
 }
 
-func ParsePrincipal(s string) (*Principal, error) {
-	buf := bytes.NewBufferString(s)
-	decoder := json.NewDecoder(buf)
+func ParsePrincipal(data []string) (*Principal, error) {
+	if len(data) != 5 {
+		log.Error("recovering principal from data ", data)
+		return nil, errors.New("wrong number of fields")
+	}
 	var p Principal
-	if err := decoder.Decode(&p); err != nil {
-		logrus.Debugf("error decoding principal: %s", s)
-		return nil, nil
+	p.Name = data[0]
+	p.ImageID = data[1]
+	p.IP = data[2]
+	if n, err := fmt.Sscan(data[3], &p.PortMin); err != nil || n != 1 {
+		log.Error("recovering principal from data ", data)
+		log.Error("can not parse the portMin field: ")
+		return nil, errors.New("parse error")
+	}
+	if n, err := fmt.Sscan(data[4], &p.PortMax); err != nil || n != 1 {
+		log.Error("recovering principal from data ", data)
+		log.Error("can not parse the portMax field: ")
+		return nil, errors.New("parse error")
 	}
 	return &p, nil
 }
@@ -143,6 +154,7 @@ func (c *MetadataProxy) getUrl(api string) string {
 	if strings.HasPrefix(api, "/") {
 		api = api[1:]
 	}
+	logrus.Info("posting to ", addr+api)
 	return addr + api
 }
 
@@ -162,27 +174,24 @@ func (c *MetadataProxy) postInstanceSet(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	resp, err := c.client.Post("/postInstanceSet", "application/json",
-		bytes.NewBuffer(data))
-	if err != nil {
-		logrus.Debug("error proxying post instance set")
-		w.WriteHeader(resp.StatusCode)
-		data, err := ioutil.ReadAll(resp.Body)
+	var pid string
+	if !debugmode {
+		resp, err := c.client.Post(c.getUrl("/postInstanceSet"), "application/json",
+			bytes.NewBuffer(data))
 		if err != nil {
-			logrus.Debug("error reading result ", err)
-			w.Write([]byte("No Response Available!"))
-		} else {
-			w.Write(data)
+			logrus.Error("error proxying post instance set", err)
+			return
 		}
-		return
-	}
 
-	pid, err := GetPrincipalID(resp)
-	if err != nil {
-		logrus.Debug("error processing response: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing proxy response"))
-		return
+		pid, err = GetPrincipalID(resp)
+		if err != nil {
+			logrus.Debug("error processing response: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Error processing proxy response"))
+			return
+		}
+	} else {
+		pid = m.OtherValues[0]
 	}
 	p := Principal{
 		Name:    m.OtherValues[0],
@@ -192,15 +201,10 @@ func (c *MetadataProxy) postInstanceSet(w http.ResponseWriter, r *http.Request) 
 		PortMax: p2,
 	}
 	//overwrite it!
-	ps, err := SerializePrincipal(&p)
-	if err != nil {
-		logrus.Debug("error serialize principal: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing principal"))
-		return
-	}
 	c.pmap.CreatePrincipal(ip, p1, p2, pid)
-	c.store.Put(pid, ps)
+	c.store.PutValues(pid, p.Serialize())
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("{\"message\": \"['%s']\"}\n", pid)))
 }
 
 func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Request) {
@@ -217,63 +221,68 @@ func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Reques
 		w.Write([]byte("Error parsing the IP address"))
 		return
 	}
+	var pid string
+	if !debugmode {
 
-	resp, err := c.client.Post(c.getUrl("/retractInstanceSet"), "application/json",
-		bytes.NewBuffer(data))
-	if err != nil {
-		logrus.Debug("error proxying post instance set")
-		w.WriteHeader(resp.StatusCode)
-		data, err := ioutil.ReadAll(resp.Body)
+		resp, err := c.client.Post(c.getUrl("/retractInstanceSet"), "application/json",
+			bytes.NewBuffer(data))
 		if err != nil {
-			logrus.Debug("error reading result ", err)
-			w.Write([]byte("No Response Available!"))
-		} else {
-			w.Write(data)
+			logrus.Debug("error proxying post instance set")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-		return
-	}
-	pid, err := GetPrincipalID(resp)
-	if err != nil {
-		logrus.Debug("error processing response: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing proxy response"))
-		return
+		pid, err = GetPrincipalID(resp)
+		if err != nil {
+			logrus.Debug("error processing response: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Error processing proxy response"))
+			return
+		}
+	} else {
+		pid = m.OtherValues[0]
 	}
 	c.store.Del(pid)
 	c.pmap.DeletePrincipal(ip, p1, p2)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf("{\"message\": \"['%s']\"}\n", pid)))
 }
 
 func (c *MetadataProxy) proxyAll(w http.ResponseWriter, r *http.Request) {
-	outreq, err := http.NewRequest(r.Method, r.URL.String(), r.Body)
+	outreq, err := http.NewRequest(r.Method, c.getUrl(r.URL.RequestURI()), r.Body)
 	if err != nil {
 		logrus.Debug("error creating new http request: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	resp, err := c.client.Do(outreq)
-	if err != nil {
-		logrus.Debug("error processing proxy request: ", err)
-		w.WriteHeader(resp.StatusCode)
-		return
-	}
+	if !debugmode {
+		resp, err := c.client.Do(outreq)
+		if err != nil {
+			logrus.Debug("error processing proxy request: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		logrus.Debug("error reading the response from server: ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		data, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logrus.Debug("error reading the response from server: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(resp.StatusCode)
+		w.Write(data)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("debugging proxy! all good\n"))
 	}
-	w.WriteHeader(resp.StatusCode)
-	w.Write(data)
 }
 
 type BearerMetadataRequest struct {
-	Principal   string
-	BearerRef   string `json:"bearerRef"`
-	OtherValues []string
+	Principal   string   `json:"principal"`
+	BearerRef   string   `json:"bearerRef"`
+	OtherValues []string `json:"otherValues"`
 }
 
-func (c *MetadataProxy) marshalBearer(r *MetadataRequest) (io.Reader, error) {
+func (c *MetadataProxy) marshalBearer(r *MetadataRequest) (*bytes.Buffer, error) {
 	br := BearerMetadataRequest{
 		Principal:   r.Principal,
 		OtherValues: r.OtherValues,
@@ -322,7 +331,15 @@ func (c *MetadataProxy) attest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	outreq, err := http.NewRequest(r.Method, r.URL.String(), newBuf)
+	if debugmode {
+		w.WriteHeader(http.StatusOK)
+		newBuf.WriteByte('\n')
+		w.Write(newBuf.Bytes())
+		return
+	}
+	logrus.Debugf("outgoing request body: %s\n", newBuf.String())
+
+	outreq, err := http.NewRequest(r.Method, c.getUrl(r.URL.String()), newBuf)
 	if err != nil {
 		logrus.Debug("error creating new http request: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -345,13 +362,25 @@ func (c *MetadataProxy) attest(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+func (c *MetadataProxy) RecoverPrincipals() {
+	for _, pid := range c.store.Keys() {
+		values := c.store.GetValues(pid)
+		p, err := ParsePrincipal(values)
+		if err != nil {
+			log.Errorf("fail to recover pricipal %s: %v", pid, err)
+			continue
+		}
+		c.pmap.CreatePrincipal(p.IP, p.PortMin, p.PortMax, pid)
+	}
+}
+
 func main() {
 
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 1 {
-		logrus.Errorf("must provide metadata to proxy for")
-		os.Exit(1)
+		logrus.Info("no server address provided, debug mode")
+		debugmode = true
 	}
 	if len(args) >= 2 {
 		logrus.SetLevel(logrus.DebugLevel)
@@ -363,8 +392,19 @@ func main() {
 			},
 		},
 		pmap: NewPmap(),
+		addr: args[0],
 	}
-	eurosys18.RestartStore()
+
+	if len(args) >= 3 {
+		eurosys18.RestartStore(true)
+	}
+	store, err := eurosys18.NewStore("pmap", false)
+	if err != nil {
+		logrus.Fatal("can not create pmap store ", err)
+	}
+	client.store = store
+	/// recover existing principals
+	client.RecoverPrincipals()
 
 	server := kvstore.NewKvStore(client.proxyAll)
 	server.AddRoute("/postInstanceSet", client.postInstanceSet, "")
