@@ -1,0 +1,17 @@
+
+/etc/default/grub
+
+GRUB_DEFAULT=saved
+GRUB_CMDLINE_LINUX_DEFAULT=”quiet panic=5″
+
+
+# safe one
+grub-set-default “Debian GNU/Linux, with Linux 2.6.32-2-686″
+
+# new one
+grub-reboot “Debian GNU/Linux, with Linux 2.6.32-example”
+
+update-grub
+
+# move to new 
+grub-set-default “Debian GNU/Linux, with Linux 2.6.32-example″
