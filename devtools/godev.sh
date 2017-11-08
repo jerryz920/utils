@@ -33,6 +33,8 @@ install_base()
   sudo apt-get install -y build-essential cmake make clang
   sudo apt-get install -y python-dev libpython-dev
   sudo apt-get install -y vim git curl wget
+  sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
+  sudo apt-get install -y python-pip python-jedi python-virtualenv
   configure_go
 }
 
@@ -42,7 +44,7 @@ configure_vim()
   if ! [ -d ~/.vim/bundle/Vundle.vim ] ; then
     git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
   fi
-  cp $WORKDIR/go/vimrc ~/.vimrc
+  cp $WORKDIR/general/vimrc ~/.vimrc
   vim +PluginInstall +qall
   vim +GoInstallBinaries +qall
   cd $HOME/.vim/bundle/YouCompleteMe

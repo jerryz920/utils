@@ -133,7 +133,7 @@ au FileType c,cc,cpp nmap <Leader>yy :YcmCompleter GetType<CR>
 au FileType c,cc,cpp nmap <Leader>y  :YcmCompleter GetTypeImprecise<CR>
 au FileType c,cc,cpp nmap <Leader>p  :YcmCompleter GetParent<CR>
 au FileType c,cc,cpp nmap <Leader>f  :YcmCompleter FixIt<CR>
-let g:ycm_key_invoke_completion = '<C-n>'
+let g:ycm_key_invoke_completion = '<Leader>c'
 
 
 
