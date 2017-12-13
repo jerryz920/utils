@@ -1,33 +1,57 @@
 #!/bin/bash
 
-# install python dev
+# install environment for go development
+
 
 export WORKDIR=${1:-`pwd`}
+export GOPATH=$HOME/go
+export GOROOT=$HOME/goroot
+export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 
 update_repo()
 {
   sudo apt-get update
 }
 
+configure_go()
+{
+  # download latest go binary, currently 1.7.3
+  mkdir -p $HOME/go $HOME/goroot
+  wget https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz
+  tar xf go1.6.3.linux-amd64.tar.gz -C $HOME/goroot
+  mv $HOME/goroot/go/* $HOME/goroot/
+  cp $WORKDIR/go/bashrc ~/.bashrc
+  # install go tools
+  go get -u github.com/nsf/gocode
+  gocode set propose-builtins true
+  gocode close # just in case
+}
 
 install_base()
 {
   update_repo
+  sudo apt-get install -y build-essential cmake make clang
+  sudo apt-get install -y python-dev libpython-dev
+  sudo apt-get install -y vim git curl wget
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
-  sudo apt-get install -y vim git curl
-  cp $WORKDIR/python/bashrc ~/.bashrc
+  configure_go
 }
-
 
 configure_vim()
 {
   mkdir -p ~/.vim/bundle
-  git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
-  cp $WORKDIR/python/vimrc ~/.vimrc
+  if ! [ -d ~/.vim/bundle/Vundle.vim ] ; then
+    git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
+  fi
+  cp $WORKDIR/general/vimrc ~/.vimrc
   vim +PluginInstall +qall
+  vim +GoInstallBinaries +qall
+  cd $HOME/.vim/bundle/YouCompleteMe
+  python install.py --clang-completer --gocode-completer
+  cd $WORKDIR
+  cp $WORKDIR/go/ycm_extra_conf.py ~/.vim/.ycm_extra_conf.py
 }
 
-update_repo
 install_base
 configure_vim
