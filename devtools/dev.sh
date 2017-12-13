@@ -15,10 +15,9 @@ update_repo()
 
 configure_go()
 {
-  # download latest go binary, currently 1.7.3
   mkdir -p $HOME/go $HOME/goroot
-  wget https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz
-  tar xf go1.6.3.linux-amd64.tar.gz -C $HOME/goroot
+  wget https://redirector.gvt1.com/edgedl/go/go1.9.2.linux-amd64.tar.gz
+  tar xf go1.9.2.linux-amd64.tar.gz -C $HOME/goroot
   mv $HOME/goroot/go/* $HOME/goroot/
   cp $WORKDIR/go/bashrc ~/.bashrc
   # install go tools
