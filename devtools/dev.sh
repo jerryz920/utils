@@ -52,5 +52,14 @@ configure_vim()
   cp $WORKDIR/go/ycm_extra_conf.py ~/.vim/.ycm_extra_conf.py
 }
 
+# in case we have forgotten
+configure_git()
+{
+	git config --global user.name "Yan Zhai"
+	git config --global user.email zhaiyan920@gmail.com
+	git config credential.helper 'cache --timeout=300'
+}
+
 install_base
 configure_vim
+configure_git
