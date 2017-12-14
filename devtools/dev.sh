@@ -18,12 +18,12 @@ update_repo()
 
 configure_go()
 {
-  mkdir -p $HOME/go $HOME/goroot
+  mkdir -p $HOME/dev $HOME/goroot
   wget https://redirector.gvt1.com/edgedl/go/go$GO_VERSION.linux-amd64.tar.gz
   tar xf go$GO_VERSION.linux-amd64.tar.gz -C $HOME/goroot
   mv $HOME/goroot/go/* $HOME/goroot/
   rm -f go$GO_VERSION.linux-amd64.tar.gz
-  cp $WORKDIR/go/bashrc ~/.bashrc
+  cp $WORKDIR/general/bashrc ~/.bashrc
   # install go tools
   go get -u github.com/nsf/gocode
   gocode set propose-builtins true

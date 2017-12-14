@@ -279,4 +279,7 @@ if has("cscope")
 
 endif
 
+" jedi
+let g:jedi#show_call_signatures = "1"
+
 
