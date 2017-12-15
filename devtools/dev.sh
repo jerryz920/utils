@@ -33,12 +33,34 @@ configure_go()
 install_base()
 {
   update_repo
-  sudo apt-get install -y build-essential cmake make clang
+  sudo apt-get install -y build-essential cmake make clang cscope
   sudo apt-get install -y python-dev libpython-dev
   sudo apt-get install -y vim git curl wget
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
+  sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
   configure_go
+}
+
+install_casablance()
+{
+  mkdir -p $HOME/tmp
+  cd $HOME/tmp
+  apt-get install -y libboost-all-dev libssl-dev cmake3 git g++
+  mkdir -p net
+  cd net
+  git clone https://github.com/jerryz920/cpprestsdk.git casablanca
+  cd casablanca/Release
+  mkdir -p build.release && cd build.release
+  cmake .. -DCMAKE_BUILD_TYPE=Release
+  make -j
+  make install
+  cd $HOME/tmp
+}
+
+install_libs()
+{
+  install_casablance
 }
 
 configure_vim()
@@ -94,6 +116,37 @@ configure_git()
 	git config credential.helper 'cache --timeout=300'
 }
 
+
+modify_origin()
+{
+  git remote rename origin upstream
+  git remote add origin https://github.com/jerryz920/$1
+  git remote add fork https://github.com/jerryz920/$1
+}
+
+configure_workspace()
+{
+  # setup kubernetes
+  go get github.com/kubernetes/kubernetes
+  cd $GOPATH/github.com/kubernetes/kubernetes
+  modify_origin kubernetes
+  # setup docker
+  go get github.com/docker/docker
+  cd $GOPATH/github.com/docker/docker
+  modify_origin docker
+  # setup docker-machine
+  go get github.com/docker/machine
+  cd $GOPATH/github.com/docker/machine
+  modify_origin machine
+
+  go get github.com/jerryz920/linux
+  go get github.com/jerryz920/boot2docker
+  go get github.com/jerryz920/utils
+  go get github.com/jerryz920/hadoop
+}
+
 install_base
+install_libs
 configure_vim
 configure_git
+configure_workspace

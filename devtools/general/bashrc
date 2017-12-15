@@ -184,6 +184,45 @@ alias clinux="cd $GOPATH/src/github.com/jerryz920/linux"
 alias cutil="cd $GOPATH/src/github.com/jerryz920/utils"
 alias cutils="cd $GOPATH/src/github.com/jerryz920/utils"
 
+gpush()
+{
+  local upstream=origin
+  local branch=master
+  if [ $# -eq 2 ]; then
+    upstream=$1
+    branch=$2
+  elif [$# -eq 1 ]; then
+    upstream=$1
+  fi
+  git push $upstream $branch
+}
+
+gcommit()
+{
+  local msg=${1:-"utility quick commit"}
+  git commit -a -m "$msg"
+}
+
+gpull()
+{
+  local upstream=origin
+  local branch=master
+  if [ $# -eq 2 ]; then
+    upstream=$1
+    branch=$2
+  elif [$# -eq 1 ]; then
+    upstream=$1
+  fi
+  git pull $upstream $branch
+}
+
+gdiff()
+{
+  local n=${1:-1}
+  git diff -r HEAD~$n
+}
+
+
 
 
 
