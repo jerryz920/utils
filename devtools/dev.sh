@@ -8,7 +8,16 @@ export GOPATH=$HOME/go
 export GOROOT=$HOME/goroot
 export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 
-
+DEV_PATH=/opt/dev
+DEV_DISK=/dev/mapper/local-dev
+mkdir -p $DEV_PATH
+mount $DEV_DISK $DEV_PATH
+if [ $? -ne 0 ]; then
+  echo "do not use dev path"
+  export NO_DEV_PATH=1
+else
+  export NO_DEV_PATH=0
+fi
 GO_VERSION=1.9.2
 
 update_repo()
@@ -56,6 +65,29 @@ install_casablance()
   make -j
   make install
   cd $HOME/tmp
+}
+
+install_docker()
+{
+
+  # provision space
+  if [ $NO_DEV_PATH -eq 0 ]; then
+    sudo mkdir $DEV_PATH/docker
+    sudo ln -s $DEV_PATH/docker /var/lib/docker
+  fi
+  sudo apt-get remove -y docker docker-engine docker.io
+  sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+  sudo apt-get update
+  sudo apt-get install docker-ce
 }
 
 install_libs()
@@ -111,9 +143,10 @@ configure_vim()
 # in case we have forgotten
 configure_git()
 {
-	git config --global user.name "Yan Zhai"
-	git config --global user.email zhaiyan920@gmail.com
-	git config credential.helper 'cache --timeout=300'
+  git config --global user.name "Yan Zhai"
+  git config --global user.email zhaiyan920@gmail.com
+  git config credential.helper 'cache --timeout=300'
+  git config --global push.default current
 }
 
 
@@ -122,6 +155,7 @@ modify_origin()
   git remote rename origin upstream
   git remote add origin https://github.com/jerryz920/$1
   git remote add fork https://github.com/jerryz920/$1
+  git checkout --track origin/dev
 }
 
 configure_workspace()
@@ -148,6 +182,7 @@ configure_workspace()
 
 install_base
 install_libs
+install_docker
 configure_vim
 configure_git
 configure_workspace
