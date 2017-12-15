@@ -128,21 +128,22 @@ configure_workspace()
 {
   # setup kubernetes
   go get github.com/kubernetes/kubernetes
-  cd $GOPATH/github.com/kubernetes/kubernetes
+  cd $GOPATH/src/github.com/kubernetes/kubernetes
   modify_origin kubernetes
   # setup docker
   go get github.com/docker/docker
-  cd $GOPATH/github.com/docker/docker
+  cd $GOPATH/src/github.com/docker/docker
   modify_origin docker
   # setup docker-machine
   go get github.com/docker/machine
-  cd $GOPATH/github.com/docker/machine
+  cd $GOPATH/src/github.com/docker/machine
   modify_origin machine
 
   go get github.com/jerryz920/linux
   go get github.com/jerryz920/boot2docker
   go get github.com/jerryz920/utils
   go get github.com/jerryz920/hadoop
+  go get github.com/jerryz920/libport
 }
 
 install_base
