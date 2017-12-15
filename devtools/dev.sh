@@ -145,7 +145,7 @@ configure_git()
 {
   git config --global user.name "Yan Zhai"
   git config --global user.email zhaiyan920@gmail.com
-  git config credential.helper 'cache --timeout=300'
+  git config --global credential.helper 'cache --timeout=600'
   git config --global push.default current
 }
 

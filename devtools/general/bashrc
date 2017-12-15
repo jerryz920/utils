@@ -189,18 +189,8 @@ alias clinux="cd $GOPATH/src/github.com/jerryz920/linux"
 alias cutil="cd $GOPATH/src/github.com/jerryz920/utils"
 alias cutils="cd $GOPATH/src/github.com/jerryz920/utils"
 
-gpush()
-{
-  local upstream=origin
-  local branch=master
-  if [ $# -eq 2 ]; then
-    upstream=$1
-    branch=$2
-  elif [ $# -eq 1 ]; then
-    upstream=$1
-  fi
-  git push $upstream $branch
-}
+alias gpush="git push"
+alias gpusheasy="git push origin master"
 
 gcommit()
 {
