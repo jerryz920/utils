@@ -223,6 +223,10 @@ gdiff()
 }
 
 
+gadd()
+{
+  git add $*
+}
 
 
 
