@@ -1,0 +1,4 @@
+
+behavior: the API server is reporting can not verify the insecure CA certificate. Not sure if they should go through regression but just install the certificate.
+
+install the /etc/kubernetes/pki/ca.crt into system trusted directory, see examples/system/update-ca
