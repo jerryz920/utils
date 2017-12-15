@@ -191,7 +191,7 @@ gpush()
   if [ $# -eq 2 ]; then
     upstream=$1
     branch=$2
-  elif [$# -eq 1 ]; then
+  elif [ $# -eq 1 ]; then
     upstream=$1
   fi
   git push $upstream $branch
