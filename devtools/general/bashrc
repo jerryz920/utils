@@ -199,8 +199,20 @@ gpush()
 
 gcommit()
 {
-  local msg=${1:-"utility quick commit"}
-  git commit -a -m "$msg"
+  if [ $# -eq 0 ]; then
+    git commit -m "utility quick commit"
+  else
+    git commit -m "$*"
+  fi
+}
+
+gallcommit()
+{
+  if [ $# -eq 0 ]; then
+    git commit -a -m "utility quick commit"
+  else
+    git commit -a -m "$*"
+  fi
 }
 
 gpull()
@@ -222,11 +234,14 @@ gdiff()
   git diff -r HEAD~$n
 }
 
+alias gdiff0="git diff "
+alias gdiff1="git diff -r HEAD~1"
+alias gdiff2="git diff -r HEAD~2"
+alias gdiff3="git diff -r HEAD~3"
+alias gdiff4="git diff -r HEAD~4"
+alias gdiff5="git diff -r HEAD~5"
 
-gadd()
-{
-  git add $*
-}
-
+alias gadd="git add"
+alias gstatus="git status"
 
 
