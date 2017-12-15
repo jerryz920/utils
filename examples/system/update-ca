@@ -1,0 +1,2 @@
+copy the certificate to /usr/local/share/ca-certificates/<name-you-want>
+run update-ca-certificates
