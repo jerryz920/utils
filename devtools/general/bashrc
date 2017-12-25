@@ -177,13 +177,66 @@ export EDITOR=vim
 
 
 alias cgithub="cd $GOPATH/src/github.com"
-alias ckube="cd $GOPATH/src/github.com/jerryz920/kubernetes"
+alias ckube="cd $GOPATH/src/github.com/kubernetes/kubernetes"
+alias cdocker="cd $GOPATH/src/github.com/docker/docker"
+alias cmachine="cd $GOPATH/src/github.com/docker/docker"
+alias cimage="cd $GOPATH/src/github.com/jerryz920/boot2docker"
+alias cport="cd $GOPATH/src/github.com/jerryz920/libport"
+alias chadoop="cd $GOPATH/src/github.com/jerryz920/hadoop"
 alias crepo="cd $GOPATH/src/github.com/jerryz920"
 alias ckernel="cd $GOPATH/src/github.com/jerryz920/linux"
 alias clinux="cd $GOPATH/src/github.com/jerryz920/linux"
 alias cutil="cd $GOPATH/src/github.com/jerryz920/utils"
 alias cutils="cd $GOPATH/src/github.com/jerryz920/utils"
 
+alias gpush="git push"
+alias gpusheasy="git push origin master"
 
+gcommit()
+{
+  if [ $# -eq 0 ]; then
+    git commit -m "utility quick commit"
+  else
+    git commit -m "$*"
+  fi
+}
+
+gallcommit()
+{
+  if [ $# -eq 0 ]; then
+    git commit -a -m "utility quick commit"
+  else
+    git commit -a -m "$*"
+  fi
+}
+
+gpull()
+{
+  local upstream=origin
+  local branch=master
+  if [ $# -eq 2 ]; then
+    upstream=$1
+    branch=$2
+  elif [ $# -eq 1 ]; then
+    upstream=$1
+  fi
+  git pull $upstream $branch
+}
+
+gdiff()
+{
+  local n=${1:-1}
+  git diff -r HEAD~$n
+}
+
+alias gdiff0="git diff "
+alias gdiff1="git diff -r HEAD~1"
+alias gdiff2="git diff -r HEAD~2"
+alias gdiff3="git diff -r HEAD~3"
+alias gdiff4="git diff -r HEAD~4"
+alias gdiff5="git diff -r HEAD~5"
+
+alias gadd="git add"
+alias gstatus="git status"
 
 

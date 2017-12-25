@@ -8,7 +8,16 @@ export GOPATH=$HOME/go
 export GOROOT=$HOME/goroot
 export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 
-
+DEV_PATH=/opt/dev
+DEV_DISK=/dev/mapper/local-dev
+mkdir -p $DEV_PATH
+mount $DEV_DISK $DEV_PATH
+if [ $? -ne 0 ]; then
+  echo "do not use dev path"
+  export NO_DEV_PATH=1
+else
+  export NO_DEV_PATH=0
+fi
 GO_VERSION=1.9.2
 
 update_repo()
@@ -33,12 +42,57 @@ configure_go()
 install_base()
 {
   update_repo
-  sudo apt-get install -y build-essential cmake make clang
+  sudo apt-get install -y build-essential cmake make clang cscope
   sudo apt-get install -y python-dev libpython-dev
   sudo apt-get install -y vim git curl wget
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
+  sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
   configure_go
+}
+
+install_casablance()
+{
+  mkdir -p $HOME/tmp
+  cd $HOME/tmp
+  apt-get install -y libboost-all-dev libssl-dev cmake3 git g++
+  mkdir -p net
+  cd net
+  git clone https://github.com/jerryz920/cpprestsdk.git casablanca
+  cd casablanca/Release
+  mkdir -p build.release && cd build.release
+  cmake .. -DCMAKE_BUILD_TYPE=Release
+  make -j
+  make install
+  cd $HOME/tmp
+}
+
+install_docker()
+{
+
+  # provision space
+  if [ $NO_DEV_PATH -eq 0 ]; then
+    sudo mkdir $DEV_PATH/docker
+    sudo ln -s $DEV_PATH/docker /var/lib/docker
+  fi
+  sudo apt-get remove -y docker docker-engine docker.io
+  sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+  sudo apt-get update
+  sudo apt-get install docker-ce
+}
+
+install_libs()
+{
+  install_casablance
 }
 
 configure_vim()
@@ -89,11 +143,46 @@ configure_vim()
 # in case we have forgotten
 configure_git()
 {
-	git config --global user.name "Yan Zhai"
-	git config --global user.email zhaiyan920@gmail.com
-	git config credential.helper 'cache --timeout=300'
+  git config --global user.name "Yan Zhai"
+  git config --global user.email zhaiyan920@gmail.com
+  git config --global credential.helper 'cache --timeout=600'
+  git config --global push.default current
+}
+
+
+modify_origin()
+{
+  git remote rename origin upstream
+  git remote add origin https://github.com/jerryz920/$1
+  git remote add fork https://github.com/jerryz920/$1
+  git checkout --track origin/dev
+}
+
+configure_workspace()
+{
+  # setup kubernetes
+  go get github.com/kubernetes/kubernetes
+  cd $GOPATH/src/github.com/kubernetes/kubernetes
+  modify_origin kubernetes
+  # setup docker
+  go get github.com/docker/docker
+  cd $GOPATH/src/github.com/docker/docker
+  modify_origin docker
+  # setup docker-machine
+  go get github.com/docker/machine
+  cd $GOPATH/src/github.com/docker/machine
+  modify_origin machine
+
+  go get github.com/jerryz920/linux
+  go get github.com/jerryz920/boot2docker
+  go get github.com/jerryz920/utils
+  go get github.com/jerryz920/hadoop
+  go get github.com/jerryz920/libport
 }
 
 install_base
+install_libs
+install_docker
 configure_vim
 configure_git
+configure_workspace
