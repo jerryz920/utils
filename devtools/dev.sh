@@ -164,6 +164,11 @@ configure_workspace()
   go get github.com/kubernetes/kubernetes
   cd $GOPATH/src/github.com/kubernetes/kubernetes
   modify_origin kubernetes
+
+  # kubernetes need special hack to navigate correctly as its original repository is k8s.io
+  mkdir -p $GOPATH/src/k8s.io/
+  ln -s $GOPATH/src/github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes
+
   # setup docker
   go get github.com/docker/docker
   cd $GOPATH/src/github.com/docker/docker

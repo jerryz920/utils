@@ -177,7 +177,7 @@ export EDITOR=vim
 
 
 alias cgithub="cd $GOPATH/src/github.com"
-alias ckube="cd $GOPATH/src/github.com/kubernetes/kubernetes"
+alias ckube="cd $GOPATH/src/k8s.io/kubernetes"
 alias cdocker="cd $GOPATH/src/github.com/docker/docker"
 alias cmachine="cd $GOPATH/src/github.com/docker/docker"
 alias cimage="cd $GOPATH/src/github.com/jerryz920/boot2docker"
