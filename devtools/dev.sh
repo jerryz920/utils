@@ -35,6 +35,7 @@ configure_go()
   cp $WORKDIR/general/bashrc ~/.bashrc
   # install go tools
   go get -u github.com/nsf/gocode
+  go get -u google.golang.org/grpc
   gocode set propose-builtins true
   gocode close # just in case
 }
@@ -48,6 +49,7 @@ install_base()
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
   sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
+  sudo apt-get install -y protobuf-compiler protobuf-c-compiler 
   configure_go
 }
 
