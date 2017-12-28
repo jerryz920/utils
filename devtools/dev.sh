@@ -36,6 +36,7 @@ configure_go()
   # install go tools
   go get -u github.com/nsf/gocode
   go get -u google.golang.org/grpc
+  go get -u github.com/golang/protobuf/protoc-gen-go
   gocode set propose-builtins true
   gocode close # just in case
 }
