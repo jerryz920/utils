@@ -239,4 +239,6 @@ alias gdiff5="git diff -r HEAD~5"
 alias gadd="git add"
 alias gstatus="git status"
 
+export LD_LIBRARY_PATH=/usr/local/lib/
+
 

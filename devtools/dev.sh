@@ -19,10 +19,22 @@ else
   export NO_DEV_PATH=0
 fi
 GO_VERSION=1.9.2
+PROTOBUF_VERSION="v3.5.1"
 
 update_repo()
 {
   sudo apt-get update
+}
+
+install_protobuf()
+{
+  go get -u github.com/google/protobuf
+  cd $GOPATH/src/github.com/google/protobuf/
+  ./autogen.sh
+  ./configure.sh
+  make -j 4
+  sudo make install
+  cd $WORKDIR
 }
 
 configure_go()
@@ -37,6 +49,8 @@ configure_go()
   go get -u github.com/nsf/gocode
   go get -u google.golang.org/grpc
   go get -u github.com/golang/protobuf/protoc-gen-go
+
+  install_protobuf $PROTOBUF_VERSION
   gocode set propose-builtins true
   gocode close # just in case
 }
@@ -44,30 +58,27 @@ configure_go()
 install_base()
 {
   update_repo
-  sudo apt-get install -y build-essential cmake make clang cscope
+  sudo apt-get install -y build-essential cmake make clang cscope autoconf
   sudo apt-get install -y python-dev libpython-dev
   sudo apt-get install -y vim git curl wget
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
   sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
-  sudo apt-get install -y protobuf-compiler protobuf-c-compiler 
+  # only 2.0 supported
+  #sudo apt-get install -y protobuf-compiler protobuf-c-compiler 
   configure_go
 }
 
 install_casablance()
 {
-  mkdir -p $HOME/tmp
-  cd $HOME/tmp
   apt-get install -y libboost-all-dev libssl-dev cmake3 git g++
-  mkdir -p net
-  cd net
-  git clone https://github.com/jerryz920/cpprestsdk.git casablanca
-  cd casablanca/Release
+  go get github.com/jerryz920/cpprestsdk
+  cd $GOPATH/src/github.com/jerryz920/cpprestsdk/Release
+  git checkout dev
   mkdir -p build.release && cd build.release
   cmake .. -DCMAKE_BUILD_TYPE=Release
-  make -j
+  make -j 8
   make install
-  cd $HOME/tmp
 }
 
 install_docker()
@@ -183,8 +194,10 @@ configure_workspace()
 
   go get github.com/jerryz920/linux
   go get github.com/jerryz920/boot2docker
+  git checkout --track origin/dev
   go get github.com/jerryz920/utils
   go get github.com/jerryz920/hadoop
+  git checkout --track origin/tapcon
   go get github.com/jerryz920/libport
 }
 
