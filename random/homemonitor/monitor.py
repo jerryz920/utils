@@ -71,21 +71,20 @@ def display(r1, r2, t):
 
 
 def monitor(fetch):
+    t0 = time.time()
     if fetch:
         download(dfname1)
-        t1 = time.time()
-    else:
-        t1 = 0
+    t1 = time.time()
     time.sleep(2)
 
+    t2 = time.time()
     if fetch:
         download(dfname2)
-        t2 = time.time()
-    else:
-        t2 = 2
+    t3 = time.time()
+
     res1 = parse(dfname1)
     res2 = parse(dfname2)
-    display(res1, res2, t2-t1)
+    display(res1, res2, ((t2-t0) + (t3-t1))/2)
 
 
 if __name__ == "__main__":
