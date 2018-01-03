@@ -1,0 +1,5 @@
+should be careful with using ParseFromFileDescriptor to extract PB, as it will consume everything. Might be good for one off connection, but need further investigation about stream of things.
+
+
+any.UnpackTo/PackFrom is copy action, no sharing with the unpacked/packed object
+
