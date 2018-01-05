@@ -201,9 +201,15 @@ configure_workspace()
   go get github.com/jerryz920/libport
 }
 
+install_my_arsenal()
+{
+  sudo $GOPATH/src/github.com/jerryz920/utils/library/install_lib.sh
+}
+
 install_base
 install_libs
 install_docker
 configure_vim
 configure_git
 configure_workspace
+install_my_arsenal
