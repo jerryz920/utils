@@ -6,9 +6,13 @@
 template <typename DelayFunc, typename ...Args>
 class DelayGuard {
   public:
+    DelayGuard() = delete;
+    DelayGuard(const DelayGuard&) = delete;
+    DelayGuard(DelayGuard&& other) { f_ = std::move(other.f_); }
+
     DelayGuard(DelayFunc f, Args&&... args):
       f_(std::bind(f, std::forward<Args>(args)...)) {}
-    ~DelayGuard() {f_();}
+    ~DelayGuard() {printf("called:\n"); f_();}
   private:
     std::function<void(void)> f_;
 };
