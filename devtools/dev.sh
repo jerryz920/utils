@@ -64,7 +64,8 @@ install_base()
   sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
   sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
-  # only 2.0 supported
+  sudo apt-get install -y libcrypto++-dev maven
+  # only 2.0 supported on ubuntu 16.04
   #sudo apt-get install -y protobuf-compiler protobuf-c-compiler 
   configure_go
 }
@@ -162,6 +163,7 @@ configure_git()
   git config --global credential.helper 'cache --timeout=600'
   git config --global push.default current
 }
+
 
 
 modify_origin()

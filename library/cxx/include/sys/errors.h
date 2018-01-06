@@ -1,0 +1,6 @@
+#ifndef _JUTILS_SYS_ERRORS_H
+#ifndef _JUTILS_SYS_ERRORS_H
+
+#define UNEXPECTED_CLOSE 65001
+#endif
+
