@@ -1,6 +1,6 @@
 
 ///// an example of async echo server using
-// unix domain socket.
+// unix domain socket. compile with -Lboost_system
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio.hpp>
