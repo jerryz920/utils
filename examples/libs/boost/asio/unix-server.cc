@@ -26,7 +26,7 @@ class unix_connection
   public:
     typedef std::shared_ptr<unix_connection> pointer;
 
-    static pointer create(boost::asio::io_service& io_context)
+    static pointer create(boost::asio::io_service &io_context)
     {
       return pointer(new unix_connection(io_context));
     }
@@ -50,7 +50,7 @@ class unix_connection
     {
     }
 
-    void header_received(boost::system::error_code ec, size_t len) {
+    void header_received(const boost::system::error_code &ec, size_t len) {
       if (ec) {
         printf("receive error in header: %s\n", ec.message().c_str());
         socket_.close();
@@ -63,7 +63,7 @@ class unix_connection
 
     }
 
-    void data_received(boost::system::error_code ec, size_t len) {
+    void data_received(const boost::system::error_code &ec, size_t len) {
       if (ec) {
         printf("receive error in header: %s\n", ec.message().c_str());
         socket_.close();
@@ -73,7 +73,7 @@ class unix_connection
       }
     }
 
-    void echo_back(boost::system::error_code ec, size_t len) {
+    void echo_back(const boost::system::error_code &ec, size_t len) {
       if (ec) {
         printf("send error: %s\n", ec.message().c_str());
         socket_.close();
