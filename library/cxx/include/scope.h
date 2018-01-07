@@ -3,6 +3,7 @@
 #define JUTILS_SCOPE_H
 
 #include <memory>
+namespace jutils {
 template <typename DelayFunc, typename ...Args>
 class DelayGuard {
   public:
@@ -22,6 +23,7 @@ DelayGuard<DelayFunc, Args...> delay(DelayFunc f, Args&&... args) {
   return DelayGuard<DelayFunc, Args...>(f, std::forward<Args>(args)...);
 }
 
+}
 
 
 #endif
