@@ -23,7 +23,7 @@ cd $path
 #recursive_copy_h include $HOME/include/jutils
 
 
-mkdir build
+mkdir -p build
 cd build
 cmake ..
 make -j 4
