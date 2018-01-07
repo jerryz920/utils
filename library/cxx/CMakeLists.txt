@@ -17,7 +17,6 @@ add_library(jutils SHARED version.cc $<TARGET_OBJECTS:jutils-config> )
 
 file(GLOB testfiles RELATIVE ${PROJECT_SOURCE_DIR} tests/test-*.cc)
 foreach(fullname ${testfiles})
-  message(fullname=${fullname})
   STRING(REGEX REPLACE "[^/]*/" "" testfile "${fullname}")
   string(REGEX MATCH "^(.*)\\.cc$" dummy ${testfile})
   set(testname ${CMAKE_MATCH_1})
@@ -30,4 +29,6 @@ endforeach(fullname)
 install(TARGETS jutils
   LIBRARY DESTINATION lib
   )
-install (DIRECTORY include DESTINATION include/jutils)
+install (DIRECTORY include/jutils DESTINATION include
+  PATTERN "*.un~" EXCLUDE
+  PATTERN "*.swp" EXCLUDE )
