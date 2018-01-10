@@ -46,9 +46,10 @@ class Config {
       jconfig_->handle = (void*) this;
       return *this;
     }
-    const JConfig *jconfig() const { return jconfig_.get(); }
-    virtual const std::string* get(const std::string &config) = 0;
+    JConfig *jconfig() { return jconfig_.get(); }
+    virtual const std::string* get(const std::string &config) const = 0;
     virtual void put(const std::string &key, const std::string &value) = 0;
+    virtual void dump(FILE* f) = 0;
 
   private:
     std::shared_ptr<JConfig> jconfig_;

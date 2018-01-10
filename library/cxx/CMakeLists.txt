@@ -32,3 +32,7 @@ install(TARGETS jutils
 install (DIRECTORY include/jutils DESTINATION include
   PATTERN "*.un~" EXCLUDE
   PATTERN "*.swp" EXCLUDE )
+
+INCLUDE(CPack)
+SET(CPACK_GENERATOR "TGZ")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Yan Zhai") #required
