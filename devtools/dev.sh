@@ -20,6 +20,7 @@ else
 fi
 GO_VERSION=1.9.2
 PROTOBUF_VERSION="v3.5.1"
+SCALA_VERSION=2.12.4
 
 update_repo()
 {
@@ -68,6 +69,18 @@ install_base()
   # only 2.0 supported on ubuntu 16.04
   #sudo apt-get install -y protobuf-compiler protobuf-c-compiler 
   configure_go
+}
+
+install_scala()
+{
+  echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+  sudo apt-get update
+  sudo apt-get install sbt
+  cd $WORKDIR
+  wget https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.deb
+  sudo dpkg -i scala-${SCALA_VERSION}.deb
+  rm -f scala-${SCALA_VERSION}.deb
 }
 
 install_casablance()
@@ -215,3 +228,4 @@ configure_vim
 configure_git
 configure_workspace
 install_my_arsenal
+install_scala
