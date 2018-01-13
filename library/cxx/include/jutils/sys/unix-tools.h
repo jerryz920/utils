@@ -1,14 +1,16 @@
 
-#ifndef _JUTIL_SYS_UNIX_H
-#define _JUTIL_SYS_UNIX_H
+#ifndef _JUTIL_SYS_UNIX_TOOLS_H
+#define _JUTIL_SYS_UNIX_TOOLS_H
 
-#include <unistd.h>
-#include <sys/un.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <string>
 #include <sstream>
 #include <tuple>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+namespace jutils {
 
 std::string check_proc(uint64_t pid) {
   std::stringstream exec_path_buf;
@@ -51,5 +53,6 @@ std::tuple<pid_t, uid_t, gid_t> unix_auth_id(int fd) {
   return std::make_tuple(cred.pid, cred.uid, cred.gid);
 }
 
+}
 
 #endif

@@ -78,6 +78,10 @@ flags = [
 './tests/gmock',
 '-isystem',
 './tests/gmock/include',
+'-I',
+'include',
+'-I',
+'.'
 ]
 
 
