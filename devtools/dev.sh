@@ -4,7 +4,7 @@
 
 
 export WORKDIR=${1:-`pwd`}
-export GOPATH=$HOME/go
+export GOPATH=$HOME/dev
 export GOROOT=$HOME/goroot
 export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 
@@ -15,11 +15,14 @@ mount $DEV_DISK $DEV_PATH
 if [ $? -ne 0 ]; then
   echo "do not use dev path"
   export NO_DEV_PATH=1
+  mkdir -p $HOME/dev/
 else
   export NO_DEV_PATH=0
+  ln -s $DEV_PATH $HOME/dev
 fi
 GO_VERSION=1.9.2
 PROTOBUF_VERSION="v3.5.1"
+SCALA_VERSION=2.12.4
 
 update_repo()
 {
@@ -30,26 +33,39 @@ install_protobuf()
 {
   go get -u github.com/google/protobuf
   cd $GOPATH/src/github.com/google/protobuf/
+  # may want some better way?
+  if test -f PROTOBUF_INSTALLED ; then 
+    echo protobuf already installed
+    return 
+  fi
+  git checkout -b dev $1
   ./autogen.sh
-  ./configure.sh
+  ./configure
   make -j 4
   sudo make install
+  touch PROTOBUF_INSTALLED
   cd $WORKDIR
 }
 
 configure_go()
 {
-  mkdir -p $HOME/dev $HOME/goroot
-  wget https://redirector.gvt1.com/edgedl/go/go$GO_VERSION.linux-amd64.tar.gz
-  tar xf go$GO_VERSION.linux-amd64.tar.gz -C $HOME/goroot
-  mv $HOME/goroot/go/* $HOME/goroot/
-  rm -f go$GO_VERSION.linux-amd64.tar.gz
-  cp $WORKDIR/general/bashrc ~/.bashrc
-  # install go tools
-  go get -u github.com/nsf/gocode
-  go get -u google.golang.org/grpc
-  go get -u github.com/golang/protobuf/protoc-gen-go
+  go 2>/dev/null 1>/dev/null
+  if [ $? -eq 0 ]; then
+    echo "go already installed"
+    return
+  else
+    mkdir -p $HOME/goroot
+    wget https://redirector.gvt1.com/edgedl/go/go$GO_VERSION.linux-amd64.tar.gz
+    tar xf go$GO_VERSION.linux-amd64.tar.gz -C $HOME/goroot
+    mv $HOME/goroot/go/* $HOME/goroot/
+    rm -f go$GO_VERSION.linux-amd64.tar.gz
+    cp $WORKDIR/general/bashrc ~/.bashrc
+    # install go tools
+    go get -u github.com/nsf/gocode
+    go get -u google.golang.org/grpc
+  fi
 
+  go get -u github.com/golang/protobuf/protoc-gen-go
   install_protobuf $PROTOBUF_VERSION
   gocode set propose-builtins true
   gocode close # just in case
@@ -61,7 +77,7 @@ install_base()
   sudo apt-get install -y build-essential cmake make clang cscope autoconf
   sudo apt-get install -y python-dev libpython-dev
   sudo apt-get install -y vim git curl wget
-  sudo apt-get install -y python-dev libpython-dev build-essentials cmake make
+  sudo apt-get install -y python-dev libpython-dev build-essential cmake make
   sudo apt-get install -y python-pip python-jedi python-virtualenv
   sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
   sudo apt-get install -y libcrypto++-dev maven
@@ -70,20 +86,42 @@ install_base()
   configure_go
 }
 
+install_scala()
+{
+  echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+  sudo apt-get update
+  sudo apt-get install sbt
+  cd $WORKDIR
+  wget https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.deb
+  sudo dpkg -i scala-${SCALA_VERSION}.deb
+  rm -f scala-${SCALA_VERSION}.deb
+}
+
 install_casablance()
 {
-  apt-get install -y libboost-all-dev libssl-dev cmake3 git g++
+  sudo apt-get install -y libboost-all-dev libssl-dev cmake git g++
   go get github.com/jerryz920/cpprestsdk
   cd $GOPATH/src/github.com/jerryz920/cpprestsdk/Release
-  git checkout dev
+  git checkout -b dev origin/dev
   mkdir -p build.release && cd build.release
+  if test -f CASABLANCE_INSTALLED; then
+    echo "already installed"
+    return
+  fi
   cmake .. -DCMAKE_BUILD_TYPE=Release
   make -j 8
-  make install
+  sudo make install
+  touch CASABLANCE_INSTALLED
 }
 
 install_docker()
 {
+  docker ps 2>/dev/null 1>/dev/null
+  if [ $? -eq 0 ]; then
+    echo docker installed
+    return
+  fi
 
   # provision space
   if [ $NO_DEV_PATH -eq 0 ]; then
@@ -152,7 +190,7 @@ configure_vim()
   cd $HOME/.vim/bundle/YouCompleteMe
   python install.py --clang-completer --gocode-completer
   cd $WORKDIR
-  cp $WORKDIR/go/ycm_extra_conf.py ~/.vim/.ycm_extra_conf.py
+  cp $WORKDIR/general/ycm_extra_conf.py ~/.vim/.ycm_extra_conf.py
 }
 
 # in case we have forgotten
@@ -171,7 +209,8 @@ modify_origin()
   git remote rename origin upstream
   git remote add origin https://github.com/jerryz920/$1
   git remote add fork https://github.com/jerryz920/$1
-  git checkout --track origin/dev
+  git fetch origin
+  git checkout -b dev --track remotes/origin/dev
 }
 
 configure_workspace()
@@ -196,10 +235,10 @@ configure_workspace()
 
   go get github.com/jerryz920/linux
   go get github.com/jerryz920/boot2docker
-  git checkout --track origin/dev
+  git checkout -b dev --track remotes/origin/dev
   go get github.com/jerryz920/utils
   go get github.com/jerryz920/hadoop
-  git checkout --track origin/tapcon
+  git checkout -b dev --track remotes/origin/tapcon
   go get github.com/jerryz920/libport
 }
 
@@ -215,3 +254,4 @@ configure_vim
 configure_git
 configure_workspace
 install_my_arsenal
+install_scala
