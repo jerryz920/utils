@@ -27,6 +27,8 @@
 
 #define DECL_ARGS6(name, t1, t2, t3, t4, t5, t6)
 
+#define DECL_ARGS7(name, t1, t2, t3, t4, t5, t6, t7)
+
 #define MOCK_METHOD0(ret, name, ...)\
   int64_t CALL_COUNT(name) = 0; \
   ret RETURN_VALUE(name); \
@@ -216,6 +218,41 @@
     CALL_ARGS(name).push_back(ARG_TYPE(name)(a1, a2, a3, a4, a5, a6)); \
   }
 
+#define MOCK_METHOD7(ret, name, t1, a1, t2, a2, t3, a3, t4, a4, t5, a5, t6, a6, t7, a7, ...) \
+  int64_t CALL_COUNT(name) = 0; \
+  ret RETURN_VALUE(name); \
+  typedef std::tuple< \
+      std::remove_reference<t1>::type, \
+      std::remove_reference<t2>::type, \
+      std::remove_reference<t3>::type, \
+      std::remove_reference<t4>::type, \
+      std::remove_reference<t5>::type, \
+      std::remove_reference<t6>::type, \
+      std::remove_reference<t7>::type> \
+      ARG_TYPE(name); \
+  std::list<ARG_TYPE(name)> CALL_ARGS(name); \
+  ret name(t1 a1, t2 a2, t3 a3, t4 a4, t5 a5, t6 a6, t7 a7) __VA_ARGS__ {\
+    CALL_COUNT(name) += 1; \
+    CALL_ARGS(name).push_back(ARG_TYPE(name)(a1, a2, a3, a4, a5, a6, a7)); \
+    return RETURN_VALUE(name); \
+  }
+
+#define MOCK_VOID_METHOD7(name, t1, a1, t2, a2, t3, a3, t4, a4, t5, a5, t6, a6, t7, a7, ...) \
+  int64_t CALL_COUNT(name) = 0; \
+  typedef std::tuple< \
+      std::remove_reference<t1>::type, \
+      std::remove_reference<t2>::type, \
+      std::remove_reference<t3>::type, \
+      std::remove_reference<t4>::type, \
+      std::remove_reference<t5>::type, \
+      std::remove_reference<t6>::type, \
+      std::remove_reference<t7>::type> \
+      ARG_TYPE(name); \
+  std::list<ARG_TYPE(name)> CALL_ARGS(name); \
+  void name(t1 a1, t2 a2, t3 a3, t4 a4, t5 a5, t6 a6, t7 a7) __VA_ARGS__ {\
+    CALL_COUNT(name) += 1; \
+    CALL_ARGS(name).push_back(ARG_TYPE(name)(a1, a2, a3, a4, a5, a6, a7)); \
+  }
 
 
 
