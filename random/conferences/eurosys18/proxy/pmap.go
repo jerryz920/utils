@@ -22,7 +22,8 @@ type Index struct {
 
 type PrincipalIndex struct {
 	Index
-	P string
+	P         string
+	GroupPort int
 }
 
 func (p Index) Overlap(b interval.IntRange) bool {
@@ -68,23 +69,32 @@ func (m *Pmap) CreatePrincipal(ip string, pmin int, pmax int, p string) {
 		P: p,
 	}
 	if tree, ok := m.Identities[ip]; ok {
-		tree.Insert(index, false)
+		tree.Insert(&index, false)
 	} else {
 		m.Identities[ip] = &interval.IntTree{}
-		m.Identities[ip].Insert(index, false)
+		m.Identities[ip].Insert(&index, false)
 	}
+}
+
+func (m *Pmap) SetPrincipalGroupPort(ip string, port int) {
+	index, err := m.GetIndex(ip, port)
+	if index == nil || err != nil {
+		logrus.Error("Principal Index not found: ", err)
+		return
+	}
+	index.GroupPort = port
 }
 
 func (m *Pmap) DeletePrincipal(ip string, pmin int, pmax int) error {
 	if tree, ok := m.Identities[ip]; ok {
-		return tree.Delete(Index{pmin, pmax + 1, ComputeID(ip, pmin, pmax+1)}, false)
+		return tree.Delete(&Index{pmin, pmax + 1, ComputeID(ip, pmin, pmax+1)}, false)
 	} else {
 		logrus.Errorf("Principal to delete not found: %s:%d-%d", ip, pmin, pmax)
 		return errors.New("not found")
 	}
 }
+func (m *Pmap) GetIndex(ip string, port int) (*PrincipalIndex, error) {
 
-func (m *Pmap) GetPrincipal(ip string, port int) (string, error) {
 	if tree, ok := m.Identities[ip]; ok {
 		indexes := tree.Get(&Index{
 			Pmin: port,
@@ -92,9 +102,8 @@ func (m *Pmap) GetPrincipal(ip string, port int) (string, error) {
 			Id:   ForceLookup,
 		})
 		if len(indexes) == 0 {
-			return "", nil
+			return nil, nil
 		}
-
 		/// find the inner most one
 		found := indexes[0]
 		fmt.Printf("debug: found index: %v, %d %d\n", found.ID(), found.Range().Start, found.Range().End)
@@ -105,19 +114,26 @@ func (m *Pmap) GetPrincipal(ip string, port int) (string, error) {
 				found = indexes[i]
 			}
 		}
-		pindex, ok := found.(PrincipalIndex)
+		pindex, ok := found.(*PrincipalIndex)
 		if !ok {
 			logrus.Debugf("type conversion error, required %T, actual %T",
 				PrincipalIndex{}, found)
-			return "", errors.New("type conversion error")
+			return nil, errors.New("type conversion error")
 		}
 		if pindex.Pmin <= port && pindex.Pmax > port {
-			return pindex.P, nil
+			return pindex, nil
 		}
 		logrus.Debugf("Not found: %s:%d", ip, port)
-		return "", nil
+		return nil, nil
+	}
+	return nil, nil
+}
+
+func (m *Pmap) GetPrincipal(ip string, port int) (string, error) {
+	index, err := m.GetIndex(ip, port)
+	if index != nil {
+		return index.P, nil
 	} else {
-		logrus.Debugf("Not found: %s:%d", ip, port)
-		return "", nil
+		return "", err
 	}
 }
