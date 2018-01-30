@@ -618,9 +618,12 @@ func main() {
 
 	flag.Parse()
 	args := flag.Args()
+	addr := ""
 	if len(args) < 1 {
 		log.Info("no server address provided, debug mode")
 		debugmode = true
+	} else {
+		addr = args[0]
 	}
 	if len(args) >= 2 {
 		log.SetLevel(log.DebugLevel)
@@ -632,7 +635,7 @@ func main() {
 			},
 		},
 		pmap: NewPmap(),
-		addr: args[0],
+		addr: addr,
 	}
 
 	if len(args) >= 3 {
