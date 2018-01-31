@@ -337,7 +337,7 @@ func (c *MetadataProxy) lookupAuthID(endorsee string) (string, string, int, erro
 	}
 	index, err := c.pmap.GetIndex(ip, int(port))
 	if index != nil {
-		return fmt.Sprintf("%s:%d-%d", ip, index.Pmin, index.Pmax),
+		return fmt.Sprintf("%s:%d-%d", ip, index.Pmin, index.Pmax-1),
 			ip, int(port), nil
 	} else {
 		return "", "", 0, err
@@ -416,8 +416,9 @@ func (c *MetadataProxy) attest(w http.ResponseWriter, r *http.Request) {
 
 	if debugmode {
 		w.WriteHeader(http.StatusOK)
-		newBuf.WriteByte('\n')
-		w.Write(newBuf.Bytes())
+		content := strings.Replace(newBuf.String(), "\"", "\\\"", -1)
+		content = strings.Trim(content, "\n")
+		w.Write([]byte(fmt.Sprintf("{\"message\": \"%s\"}", content)))
 		return
 	}
 	log.Debugf("outgoing request body: %s\n", newBuf.String())
@@ -506,6 +507,7 @@ func (c *MetadataProxy) postWorkerSet(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Error processing proxy response"))
 			return
 		}
+		log.Debug("subject set req: ", buf.String())
 		resp, err = c.client.Post(c.getUrl("/updateSubjectSet"), "application/json",
 			buf)
 
@@ -518,7 +520,7 @@ func (c *MetadataProxy) postWorkerSet(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		log.Info("Updating subject set, status:%d", resp.StatusCode)
+		log.Info("Updating subject set, status: ", resp.StatusCode)
 		w.WriteHeader(resp.StatusCode)
 		if resp.StatusCode == http.StatusOK {
 			c.pmap.SetPrincipalGroupPort(ip, port)
@@ -563,7 +565,7 @@ func (c *MetadataProxy) workerAccessesObject(w http.ResponseWriter, r *http.Requ
 
 	if debugmode {
 		w.WriteHeader(http.StatusOK)
-		buf.WriteByte('\n')
+		buf.WriteString("{\"message\": \"debug mode\"}\n")
 		w.Write(buf.Bytes())
 		return
 	}

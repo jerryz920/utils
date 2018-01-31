@@ -10,6 +10,8 @@ c2base2=$((cbase+6))
 
 curl http://10.10.1.39:7777/postObjectAcl -d "{ \"principal\": \"bob\",  \"otherValues\": [\"bob:object1\", \"git://github.com/jerryz920/spark\"] }"
 #curl http://10.10.1.39:7777/postObjectAcl -d "{ \"principal\": \"bob\",  \"otherValues\": [\"bob:object1\", \"git://github.com/jerryz920/docker\"] }"
+curl http://10.10.1.39:7777/postAttesterImage -d "{ \"principal\": \"$IAAS_IP\",  \"otherValues\": [\"membership-image-hash\", \"*\"]}"
+curl http://10.10.1.39:7777/postAttesterImage -d "{ \"principal\": \"$IAAS_IP\",  \"otherValues\": [\"membership-image-hash2\", \"*\"]}"
 curl http://10.10.1.39:7777/postImageProperty -d "{ \"principal\": \"$IAAS_IP\",  \"otherValues\": [\"membership-image-hash\", \"*\", \"git://github.com/jerryz920/docker\"]}"
 curl http://10.10.1.39:7777/postImageProperty -d "{ \"principal\": \"$IAAS_IP\",  \"otherValues\": [\"membership-image-hash2\", \"*\", \"git://github.com/jerryz920/spark\"]}"
 
