@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+  echo "usage: copydep path-to-exec destination"
+  exit 1
+fi
+
+if ![ -f $1 ]; then
+  echo "file $1 does not exist"
+  exit 2
+fi
+
+if ![ -d $2 ]; then
+  echo "destination $2 does not exist"
+  exit 3
+fi
+
+
+ldd `which attguard` | sed 's/\(.\+=> *\)\|\s*//' | sed 's/(.\+)//' | sed '/^\s*$/d' | while read line; do
+	if [[ "$line" == "/lib64/ld-linux-x86-64.so.2" ]]; then
+	  continue
+	fi
+	cp $line $2
+done
+
+
