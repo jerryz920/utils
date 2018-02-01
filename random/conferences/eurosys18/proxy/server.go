@@ -65,8 +65,8 @@ func ParsePrincipal(data []string) (*Principal, error) {
 }
 
 type MetadataRequest struct {
-	Principal   string
-	OtherValues []string
+	Principal   string   `json:"principal"`
+	OtherValues []string `json:"otherValues"`
 }
 
 func (r MetadataRequest) ByteBuf() (*bytes.Buffer, error) {
@@ -190,6 +190,7 @@ func (c *MetadataProxy) postInstanceSet(w http.ResponseWriter, r *http.Request) 
 
 	var pid string
 	if !debugmode {
+		log.Debug("outgoing req: ", string(data))
 		resp, err := c.client.Post(c.getUrl("/postInstanceSet"), "application/json",
 			bytes.NewBuffer(data))
 		if err != nil {
@@ -358,7 +359,7 @@ func (c *MetadataProxy) lookupGroupPortAndBearer(endorsee string) (string, strin
 	}
 	index, err := c.pmap.GetIndex(ip, int(port))
 	if index != nil {
-		return index.P, ip, index.GroupPort, nil
+		return index.GroupP, ip, index.GroupPort, nil
 	} else {
 		return "", "", 0, err
 	}
@@ -521,9 +522,16 @@ func (c *MetadataProxy) postWorkerSet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Info("Updating subject set, status: ", resp.StatusCode)
-		w.WriteHeader(resp.StatusCode)
+		pid, err = GetPrincipalID(resp)
+		if err != nil {
+			log.Debug("error processing response: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Error processing proxy response"))
+			return
+		}
+
 		if resp.StatusCode == http.StatusOK {
-			c.pmap.SetPrincipalGroupPort(ip, port)
+			c.pmap.SetPrincipalGroupPort(ip, port, pid)
 		}
 	} else {
 		pid = m.OtherValues[0]

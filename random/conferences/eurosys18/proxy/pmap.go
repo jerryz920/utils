@@ -24,6 +24,7 @@ type PrincipalIndex struct {
 	Index
 	P         string
 	GroupPort int
+	GroupP    string
 }
 
 func (p Index) Overlap(b interval.IntRange) bool {
@@ -76,13 +77,14 @@ func (m *Pmap) CreatePrincipal(ip string, pmin int, pmax int, p string) {
 	}
 }
 
-func (m *Pmap) SetPrincipalGroupPort(ip string, port int) {
+func (m *Pmap) SetPrincipalGroupPort(ip string, port int, P string) {
 	index, err := m.GetIndex(ip, port)
 	if index == nil || err != nil {
 		logrus.Error("Principal Index not found: ", err)
 		return
 	}
 	index.GroupPort = port
+	index.GroupP = P
 }
 
 func (m *Pmap) DeletePrincipal(ip string, pmin int, pmax int) error {
