@@ -76,6 +76,7 @@ autocmd Filetype c,cpp,cc set cinoptions=l1
 autocmd Filetype c,cpp,cc let c_gnu=1
 autocmd FileType c,cc,cpp,yacc,lex,tcl set shiftwidth=2 | set expandtab | set softtabstop=2
 autocmd FileType asm set shiftwidth=8 | set expandtab | set softtabstop=8
+autocmd FileType python set shiftwidth=4 | set expandtab | set softtabstop=4
 
 syn match Braces display '[{}()\[\]]'
 hi Braces ctermfg=blue
