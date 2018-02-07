@@ -671,6 +671,7 @@ func main() {
 	server.AddRoute("/appAccessesObject", client.attest, "")
 	server.AddRoute("/postWorkerSet", client.postWorkerSet, "")
 	server.AddRoute("/workerAccessesObject", client.workerAccessesObject, "")
+	server.AddRoute("/checkImgProperty", client.proxyAll, "")
 
 	if err := server.ListenAndServe(eurosys18.MetadataProxyAddress); err != nil {
 		log.Fatal("can not listen on address: ", err)
