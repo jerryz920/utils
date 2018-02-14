@@ -26,6 +26,7 @@ type Principal struct {
 	Name    string
 	ImageID string
 	IP      string
+	Config  string
 	PortMin int
 	PortMax int
 }
@@ -35,6 +36,12 @@ func (p *Principal) Serialize() []string {
 		fmt.Sprintf("%d", p.PortMin),
 		fmt.Sprintf("%d", p.PortMax)}
 
+}
+
+func (p *Principal) ToSafeValues() []string {
+	return []string{p.Name, p.ImageID, "image",
+		fmt.Sprintf("%s:%d-%d", p.IP, p.PortMin, p.PortMax),
+		p.Config}
 }
 
 func logHeader(resp *http.Response) {
@@ -153,10 +160,11 @@ func GetPrincipalID(resp *http.Response) (string, error) {
 }
 
 type MetadataProxy struct {
-	client *http.Client
-	pmap   *Pmap
-	store  eurosys18.Store
-	addr   string
+	client    *http.Client
+	pmap      *Pmap
+	store     eurosys18.Store
+	safestore eurosys18.Store
+	addr      string
 }
 
 func (c *MetadataProxy) getUrl(api string) string {
@@ -212,7 +220,7 @@ func (c *MetadataProxy) postInstanceSet(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			log.Debug("error processing response: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Error processing proxy response"))
+			w.Write([]byte("\"Error processing proxy response\""))
 			return
 		}
 	} else {
@@ -222,35 +230,58 @@ func (c *MetadataProxy) postInstanceSet(w http.ResponseWriter, r *http.Request) 
 		Name:    m.OtherValues[0],
 		ImageID: m.OtherValues[1],
 		IP:      ip,
+		Config:  m.OtherValues[4],
 		PortMin: p1,
 		PortMax: p2,
 	}
 	//overwrite it!
 	c.pmap.CreatePrincipal(ip, p1, p2, pid)
 	c.store.PutValues(pid, p.Serialize())
+	c.safestore.Put(m.OtherValues[0], pid)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf("{\"message\": \"['%s']\"}\n", pid)))
 }
 
 func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Request) {
-	m, data, status := ReadRequest(r)
+	m, _, status := ReadRequest(r)
 	SetCommonHeader(w)
 	if status != http.StatusOK {
 		log.Debug("error reading request: ", status)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	ip, p1, p2, status := ParseIP(m.OtherValues[3])
-	if status != http.StatusOK {
-		log.Debug("error parsing the IP address: ", status)
+	storedpid := c.safestore.Get(m.OtherValues[0])
+	if storedpid == "" {
+		log.Debug("principal id not found: ", m.OtherValues[0])
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	serialized := c.store.GetValues(storedpid)
+	storedPrincipal, err := ParsePrincipal(serialized)
+	if err != nil {
+		log.Debug("stored principal id not found: ", storedpid)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	ip, p1, p2 := storedPrincipal.IP, storedPrincipal.PortMin,
+		storedPrincipal.PortMax
+
+	newReqBody := MetadataRequest{
+		Principal:   m.Principal,
+		OtherValues: storedPrincipal.ToSafeValues(),
+	}
+	newbuf, err := newReqBody.ByteBuf()
+	if err != nil {
+		log.Debug("error generating the new request body")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error parsing the IP address"))
 		return
 	}
 	var pid string
 	if !debugmode {
 
 		resp, err := c.client.Post(c.getUrl("/retractInstanceSet"), "application/json",
-			bytes.NewBuffer(data))
+			newbuf)
 		if err != nil {
 			log.Debug("error proxying post instance set")
 			if resp == nil {
@@ -276,6 +307,7 @@ func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Reques
 		pid = m.OtherValues[0]
 	}
 	c.store.Del(pid)
+	c.safestore.Del(m.OtherValues[0])
 	c.pmap.DeletePrincipal(ip, p1, p2)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(fmt.Sprintf("{\"message\": \"['%s']\"}\n", pid)))
@@ -662,7 +694,13 @@ func main() {
 	if err != nil {
 		log.Fatal("can not create pmap store ", err)
 	}
+	safestore, err := eurosys18.NewStore("safe", false)
+	if err != nil {
+		log.Fatal("can not create safe store ", err)
+	}
+
 	client.store = store
+	client.safestore = safestore
 	/// recover existing principals
 	client.RecoverPrincipals()
 
