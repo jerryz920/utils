@@ -34,7 +34,8 @@ type Principal struct {
 func (p *Principal) Serialize() []string {
 	return []string{p.Name, p.ImageID, p.IP,
 		fmt.Sprintf("%d", p.PortMin),
-		fmt.Sprintf("%d", p.PortMax)}
+		fmt.Sprintf("%d", p.PortMax),
+		p.Config}
 
 }
 
@@ -51,7 +52,7 @@ func logHeader(resp *http.Response) {
 }
 
 func ParsePrincipal(data []string) (*Principal, error) {
-	if len(data) != 5 {
+	if len(data) != 6 {
 		log.Error("recovering principal from data ", data)
 		return nil, errors.New("wrong number of fields")
 	}
@@ -69,6 +70,7 @@ func ParsePrincipal(data []string) (*Principal, error) {
 		log.Error("can not parse the portMax field: ")
 		return nil, errors.New("parse error")
 	}
+	p.Config = data[5]
 	return &p, nil
 }
 
@@ -279,7 +281,7 @@ func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Reques
 	}
 	var pid string
 	if !debugmode {
-
+		log.Debug("outgoing delete request: ", newbuf.String())
 		resp, err := c.client.Post(c.getUrl("/retractInstanceSet"), "application/json",
 			newbuf)
 		if err != nil {
@@ -295,18 +297,15 @@ func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Reques
 			w.WriteHeader(resp.StatusCode)
 			return
 		}
-
-		pid, err = GetPrincipalID(resp)
-		if err != nil {
-			log.Debug("error processing response: ", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Error processing proxy response"))
-			return
+		if log.GetLevel() == log.DebugLevel {
+			dumpdata, _ := httputil.DumpResponse(resp, true)
+			log.Debug("response data dump: ", string(dumpdata))
 		}
+
 	} else {
-		pid = m.OtherValues[0]
+		pid = storedpid
 	}
-	c.store.Del(pid)
+	c.store.Del(storedpid)
 	c.safestore.Del(m.OtherValues[0])
 	c.pmap.DeletePrincipal(ip, p1, p2)
 	w.WriteHeader(http.StatusOK)
