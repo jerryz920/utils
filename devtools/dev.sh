@@ -102,7 +102,7 @@ install_scala()
 
 install_casablance()
 {
-  sudo apt-get install -y libboost-all-dev libssl-dev cmake git g++
+  sudo apt-get install -y libboost-all-dev libssl-dev git g++
   go get github.com/jerryz920/cpprestsdk
   cd $GOPATH/src/github.com/jerryz920/cpprestsdk/Release
   git checkout -b dev origin/dev

@@ -282,8 +282,8 @@ func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Reques
 }
 
 func (c *MetadataProxy) proxyAll(w http.ResponseWriter, r *http.Request) {
-	if log.Level == log.DebugLevel {
-		data, _ := httputil.DumpRequest(req, true)
+	if log.GetLevel() == log.DebugLevel {
+		data, _ := httputil.DumpRequest(r, true)
 		log.Debug("request data = ", string(data))
 	}
 
