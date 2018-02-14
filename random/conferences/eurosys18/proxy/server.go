@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"regexp"
 	"strconv"
 	"strings"
@@ -118,6 +119,7 @@ func ReadRequest(r *http.Request) (*MetadataRequest, []byte, int) {
 		log.Errorf("error reading the body %v\n", err)
 		return nil, nil, http.StatusBadRequest
 	}
+	log.Debug("request body = ", string(data))
 	buf := bytes.NewBuffer(data)
 	d := json.NewDecoder(buf)
 	mr := MetadataRequest{}
@@ -190,7 +192,6 @@ func (c *MetadataProxy) postInstanceSet(w http.ResponseWriter, r *http.Request) 
 
 	var pid string
 	if !debugmode {
-		log.Debug("outgoing req: ", string(data))
 		resp, err := c.client.Post(c.getUrl("/postInstanceSet"), "application/json",
 			bytes.NewBuffer(data))
 		if err != nil {
@@ -281,7 +282,13 @@ func (c *MetadataProxy) retractInstanceSet(w http.ResponseWriter, r *http.Reques
 }
 
 func (c *MetadataProxy) proxyAll(w http.ResponseWriter, r *http.Request) {
+	if log.Level == log.DebugLevel {
+		data, _ := httputil.DumpRequest(req, true)
+		log.Debug("request data = ", string(data))
+	}
+
 	outreq, err := http.NewRequest(r.Method, c.getUrl(r.URL.RequestURI()), r.Body)
+
 	SetCommonHeader(w)
 	if err != nil {
 		log.Debug("error creating new http request: ", err)
@@ -422,7 +429,7 @@ func (c *MetadataProxy) attest(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("{\"message\": \"%s\"}", content)))
 		return
 	}
-	log.Debugf("outgoing request body: %s\n", newBuf.String())
+	log.Debugf("bearer request body: %s\n", newBuf.String())
 
 	outreq, err := http.NewRequest(r.Method, c.getUrl(r.URL.String()), newBuf)
 	if err != nil {
@@ -577,7 +584,7 @@ func (c *MetadataProxy) workerAccessesObject(w http.ResponseWriter, r *http.Requ
 		w.Write(buf.Bytes())
 		return
 	}
-	log.Debugf("outgoing request body: %s\n", buf.String())
+	log.Debugf("converted request body: %s\n", buf.String())
 
 	outreq, err := http.NewRequest(r.Method, c.getUrl(r.URL.String()), &buf)
 	if err != nil {
