@@ -8,8 +8,8 @@ export GOPATH=$HOME/dev
 export GOROOT=$HOME/goroot
 export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 
-DEV_PATH=/opt/dev
-DEV_DISK=/dev/mapper/local-dev
+source env
+
 mkdir -p $DEV_PATH
 mount $DEV_DISK $DEV_PATH
 if [ $? -ne 0 ]; then
@@ -20,9 +20,6 @@ else
   export NO_DEV_PATH=0
   ln -s $DEV_PATH $HOME/dev
 fi
-GO_VERSION=1.9.2
-PROTOBUF_VERSION="v3.5.1"
-SCALA_VERSION=2.12.4
 
 update_repo()
 {
@@ -86,18 +83,6 @@ install_base()
   # only 2.0 supported on ubuntu 16.04
   #sudo apt-get install -y protobuf-compiler protobuf-c-compiler 
   configure_go
-}
-
-install_scala()
-{
-  echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-  sudo apt-get update
-  sudo apt-get install sbt
-  cd $WORKDIR
-  wget https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.deb
-  sudo dpkg -i scala-${SCALA_VERSION}.deb
-  rm -f scala-${SCALA_VERSION}.deb
 }
 
 install_casablance()
@@ -249,6 +234,13 @@ install_my_arsenal()
   sudo $GOPATH/src/github.com/jerryz920/utils/library/install_lib.sh
 }
 
+install_extra()
+{
+  for n in `ls conf.d/`; do
+    conf.d/$n
+  done
+}
+
 install_base
 install_libs
 install_docker
@@ -256,4 +248,4 @@ configure_vim
 configure_git
 configure_workspace
 install_my_arsenal
-install_scala
+install_extra
