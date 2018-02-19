@@ -2,13 +2,7 @@
 
 # install environment for go development
 
-
-export WORKDIR=${1:-`pwd`}
-export GOPATH=$HOME/dev
-export GOROOT=$HOME/goroot
-export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
-
-source env
+source env.sh
 
 mkdir -p $DEV_PATH
 mount $DEV_DISK $DEV_PATH
