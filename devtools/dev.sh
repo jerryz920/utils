@@ -5,15 +5,7 @@
 source env.sh
 
 mkdir -p $DEV_PATH
-mount $DEV_DISK $DEV_PATH
-if [ $? -ne 0 ]; then
-  echo "do not use dev path"
-  export NO_DEV_PATH=1
-  mkdir -p $HOME/dev/
-else
-  export NO_DEV_PATH=0
-  ln -s $DEV_PATH $HOME/dev
-fi
+ln -s $DEV_PATH $HOME/dev
 
 install_all()
 {
