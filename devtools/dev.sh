@@ -5,15 +5,7 @@
 source env.sh
 
 mkdir -p $DEV_PATH
-mount $DEV_DISK $DEV_PATH
-if [ $? -ne 0 ]; then
-  echo "do not use dev path"
-  export NO_DEV_PATH=1
-  mkdir -p $HOME/dev/
-else
-  export NO_DEV_PATH=0
-  ln -s $DEV_PATH $HOME/dev
-fi
+ln -s $DEV_PATH $HOME/dev
 
 install_all()
 {
@@ -23,17 +15,17 @@ install_all()
     done
   done
 }
-#install_all
+install_all
 
-conf.d/0-base.sh
-conf.d/1-go.sh
-#conf.d/2-docker.sh
-conf.d/2-protobuf.sh
-conf.d/5-aws.sh
-conf.d/5-casablance.sh
-conf.d/5-config.sh
-conf.d/5-gotool.sh
-#conf.d/5-haskell.sh
-conf.d/5-myrepo.sh
-#conf.d/5-scala.sh
-conf.d/5-vim.sh
+#conf.d/0-base.sh
+#conf.d/1-go.sh
+##conf.d/2-docker.sh
+#conf.d/2-protobuf.sh
+#conf.d/5-aws.sh
+#conf.d/5-casablance.sh
+#conf.d/5-config.sh
+#conf.d/5-gotool.sh
+##conf.d/5-haskell.sh
+#conf.d/5-myrepo.sh
+##conf.d/5-scala.sh
+#conf.d/5-vim.sh
