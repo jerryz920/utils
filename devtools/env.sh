@@ -1,4 +1,4 @@
-export DEV_PATH=/openstack/
+export DEV_PATH=/opt/
 export DEV_DISK=/dev/mapper/local-dev
 export WORKDIR=${1:-`pwd`}
 export GOPATH=$DEV_PATH/go
