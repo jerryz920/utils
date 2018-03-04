@@ -188,6 +188,7 @@ alias ckernel="cd $GOPATH/src/github.com/jerryz920/linux"
 alias clinux="cd $GOPATH/src/github.com/jerryz920/linux"
 alias cutil="cd $GOPATH/src/github.com/jerryz920/utils"
 alias cutils="cd $GOPATH/src/github.com/jerryz920/utils"
+alias chaskell="cd $GOPATH/src/github.com/jerryz920/haskell"
 
 alias gpush="git push"
 alias gpusheasy="git push origin master"
