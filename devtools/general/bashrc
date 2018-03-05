@@ -172,7 +172,7 @@ fi
 
 export GOPATH=$HOME/dev
 export GOROOT=$HOME/goroot
-export PATH=$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
+export PATH=$HOME/.local/bin:$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 export EDITOR=vim
 
 
@@ -240,6 +240,6 @@ alias gdiff5="git diff -r HEAD~5"
 alias gadd="git add"
 alias gstatus="git status"
 
-export LD_LIBRARY_PATH=/usr/local/lib/
+export LD_LIBRARY_PATH=$HOME/.local/lib:/usr/local/lib/
 
 
