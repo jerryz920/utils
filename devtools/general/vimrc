@@ -140,6 +140,7 @@ au FileType c,cc,cpp nmap <Leader>p  :YcmCompleter GetParent<CR>
 au FileType c,cc,cpp nmap <Leader>f  :YcmCompleter FixIt<CR>
 au FileType c,cc,cpp nmap <Leader>q  :ccl<CR>
 let g:ycm_key_invoke_completion = '<Leader>c'
+au FileType tex let g:ycm_key_invoke_completion = ''
 
 
 " syntastic plugin
