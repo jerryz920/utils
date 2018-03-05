@@ -9,9 +9,9 @@ ln -s $DEV_PATH $HOME/dev
 
 install_all()
 {
-  for prefix in "0 1 2 3 4 5"; do
+  for prefix in 0 1 2 3 4 5; do
     for n in `ls conf.d/$prefix-*`; do
-      conf.d/$n
+      ./$n
     done
   done
 }
