@@ -1,4 +1,5 @@
 export DEV_PATH=${1:-/opt/}
+export NO_DEV_PATH=${2:-1}
 export DEV_DISK=/dev/mapper/local-dev
 export WORKDIR=`pwd`
 export GOPATH=$DEV_PATH/go
