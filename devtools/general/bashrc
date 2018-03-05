@@ -170,7 +170,7 @@ fi
 
 
 
-export GOPATH=$HOME/dev
+export GOPATH=$HOME/dev/go
 export GOROOT=$HOME/goroot
 export PATH=$HOME/.local/bin:$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
 export EDITOR=vim

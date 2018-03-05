@@ -5,7 +5,9 @@
 source env.sh "$1" "$2"
 
 mkdir -p $DEV_PATH
-ln -s $DEV_PATH $HOME/dev
+if ! [ -h $HOME/dev/ ]; then
+  ln -s $DEV_PATH $HOME/dev
+fi
 
 install_all()
 {

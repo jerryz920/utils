@@ -1,10 +1,6 @@
 #!/bin/bash
 
 # provision space
-if [ $NO_DEV_PATH -eq 0 ]; then
-  sudo mkdir $DEV_PATH/docker
-  sudo ln -s $DEV_PATH/docker /var/lib/docker
-fi
 sudo apt-get remove -y docker docker-engine docker.io
 sudo apt-get install -y \
   apt-transport-https \
