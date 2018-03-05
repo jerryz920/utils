@@ -2,7 +2,7 @@
 
 # install environment for go development
 
-source env.sh
+source env.sh $1
 
 mkdir -p $DEV_PATH
 ln -s $DEV_PATH $HOME/dev
