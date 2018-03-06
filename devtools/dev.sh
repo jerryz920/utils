@@ -8,6 +8,7 @@ mkdir -p $DEV_PATH
 if ! [ -h $HOME/dev/ ]; then
   ln -s $DEV_PATH $HOME/dev
 fi
+source functions
 
 install_all()
 {

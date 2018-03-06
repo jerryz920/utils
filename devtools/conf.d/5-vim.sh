@@ -33,8 +33,12 @@ if ! [ -d ~/.vim/bundle/Vundle.vim ] ; then
   git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
 fi
 cp $WORKDIR/general/vimrc ~/.vimrc
-vim +PluginInstall +qall
-vim +GoInstallBinaries +qall
+vim +PluginInstall +qall &
+pid=`jobs -p`
+wait_timeout $pid 120
+vim +GoInstallBinaries +qall &
+pid=`jobs -p`
+wait_timeout $pid 120
 cd $HOME/.vim/bundle/YouCompleteMe
 python install.py --clang-completer --gocode-completer
 cd $WORKDIR
