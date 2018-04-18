@@ -1,0 +1,1 @@
+openssl x509 -in /root/.docker/machine/certs/cert.pem -text -noout
