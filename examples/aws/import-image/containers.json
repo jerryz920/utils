@@ -1,0 +1,10 @@
+
+[
+  {
+    "Description": "Boot2Docker Customized",
+    "Format": "vmdk",
+    "UserBucket": {
+      "S3Bucket": "customized-ami-bucket",
+      "S3Key": "vms/boot2docker.vmdk"
+    }
+  }]
