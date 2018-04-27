@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+echo "entering the working mode"
+docker run -it -v src:/src dev bash

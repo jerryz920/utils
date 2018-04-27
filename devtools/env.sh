@@ -1,5 +1,4 @@
-export DEV_PATH=${1:-/opt/}
-export DEV_DISK=/dev/mapper/local-dev
+export DEV_PATH=${1:-//mnt/data/zydev}
 export WORKDIR=`pwd`
 export GOPATH=$DEV_PATH/go
 export GOROOT=$DEV_PATH/goroot

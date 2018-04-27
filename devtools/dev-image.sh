@@ -12,14 +12,13 @@ source functions
 
 install_all()
 {
-  for prefix in x 0 1 2 3 4 5 ; do
+  for prefix in 0 1 2 3 4 5; do
     for n in `ls conf.d/$prefix-*`; do
       ./$n
     done
   done
 }
 install_all
-bin/setup_repo.sh
 
 #conf.d/0-base.sh
 #conf.d/1-go.sh

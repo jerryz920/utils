@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Creating the src volume"
+docker volume create src
+
+echo "Building work environment image"
+docker build -t dev .
+
+echo "Setting up repository for the first time"
+docker run -it --rm -v src:/src dev setup_repo.sh
+
