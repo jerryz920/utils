@@ -7,3 +7,4 @@ cd $WORKDIR
 wget https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.deb
 sudo dpkg -i scala-${SCALA_VERSION}.deb
 rm -f scala-${SCALA_VERSION}.deb
+pip install riak # used by SAFE project
