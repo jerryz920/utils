@@ -304,5 +304,5 @@ endif
 
 " jedi
 let g:jedi#show_call_signatures = "1"
-
+let g:ycm_python_binary_path = "/usr/bin/python3"
 
