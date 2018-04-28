@@ -3,4 +3,9 @@
 tag=${1:-latest}
 
 echo "entering the working mode"
+docker container ls --format "{{.Names}}" | grep '\<dev\>'
+if [ $? -ne 0 ]; then
 docker run --rm -it -v src:/src -v /var/run/docker.sock:/var/run/docker.sock --name dev dev:${tag} bash
+else
+docker exec -it dev bash
+fi

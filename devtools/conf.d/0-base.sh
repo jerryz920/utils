@@ -12,4 +12,5 @@ sudo apt-get install -y libcrypto++-dev maven
 sudo apt-get install -y apt-transport-https
 sudo apt-get install -y bash-completion net-tools iputils-ping dnsutils
 sudo apt-get install -y netcat nmap
+sudo apt-get install -y tmux
 
