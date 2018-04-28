@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+export GOPATH=$HOME/dev/go
+export GOROOT=$HOME/goroot
+export PATH=$HOME/.local/bin:$PATH:$HOME/bin:$GOPATH/bin:$GOROOT/bin/
+export EDITOR=vim
 modify_origin()
 {
   git remote rename origin upstream
@@ -32,5 +37,6 @@ go get github.com/jerryz920/hadoop
 cd $GOPATH/src/github.com/jerryz920/hadoop
 git checkout -b tapcon --track remotes/origin/tapcon
 go get github.com/jerryz920/libport
+go get github.com/jerryz920/SAFE
 
 sudo $GOPATH/src/github.com/jerryz920/utils/library/install_lib.sh

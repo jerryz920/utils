@@ -9,3 +9,7 @@ sudo apt-get install -y python-dev libpython-dev build-essential make
 sudo apt-get install -y python-pip python-jedi python-virtualenv
 sudo apt-get install -y bmon strace gdb valgrind faketime linux-tools-common
 sudo apt-get install -y libcrypto++-dev maven
+sudo apt-get install -y apt-transport-https
+sudo apt-get install -y bash-completion net-tools iputils-ping dnsutils
+sudo apt-get install -y netcat nmap
+

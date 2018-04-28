@@ -5,6 +5,7 @@
 "" general setting
 set backspace=2
 set linebreak
+set encoding=utf8
 set whichwrap=b,s,<,>,[,]
 set listchars=tab:.\ ,trail:-
 set hidden

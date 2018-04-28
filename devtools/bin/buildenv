@@ -1,11 +1,16 @@
 #!/bin/bash
 
+tag=${1:-latest}
+
 echo "Creating the src volume"
 docker volume create src
 
 echo "Building work environment image"
 docker build -t dev .
 
+echo "Do some stupid vim setup"
+docker run -it --rm -v src:/src --name develop -v /var/run/docker.sock:/var/run/docker.sock dev:${tag} setup_vim.sh
+
 echo "Setting up repository for the first time"
-docker run -it --rm -v src:/src dev setup_repo.sh
+docker run -it --rm -v src:/src dev:${tag} setup_repo.sh
 
