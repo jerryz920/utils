@@ -7,3 +7,5 @@ go get github.com/basho/riak-go-client
 
 # interval tree
 go get github.com/biogo/store/interval
+go get github.com/gorilla/mux
+go get github.com/sirupsen/logrus
