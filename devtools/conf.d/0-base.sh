@@ -14,4 +14,5 @@ sudo apt-get install -y bash-completion net-tools iputils-ping dnsutils
 sudo apt-get install -y netcat nmap
 sudo apt-get install -y tmux
 sudo apt-get install -y libpam0g-dev
+sudo apt-get install -y python3-pip
 
