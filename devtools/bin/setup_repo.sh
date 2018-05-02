@@ -40,3 +40,11 @@ go get github.com/jerryz920/libport
 go get github.com/jerryz920/SAFE
 
 sudo $GOPATH/src/github.com/jerryz920/utils/library/install_lib.sh
+sudo $GOPATH/src/github.com/jerryz920/utils/tools/install.sh
+if ! [ -f /usr/local/bin/commit ]; then
+  if [ -f /usr/local/bin/commit.sh ]; then
+    ln -s /usr/local/bin/commit.sh /usr/local/bin/commit
+    chmod +x /usr/local/bin/commit
+  fi
+fi
+commit
