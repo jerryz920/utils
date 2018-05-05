@@ -24,12 +24,12 @@ type LoggedResponseWriter struct {
 }
 
 func (l LoggedResponseWriter) Write(b []byte) (int, error) {
-	log.Infof("Response Content: %s", string(b))
+	log.Debugf("Response Content: %s", string(b))
 	return l.ResponseWriter.Write(b)
 }
 
 func (l LoggedResponseWriter) WriteHeader(h int) {
-	log.Infof("Response Status: %d", h)
+	log.Debugf("Response Status: %d", h)
 	l.ResponseWriter.WriteHeader(h)
 }
 
