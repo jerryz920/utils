@@ -9,5 +9,5 @@ docker create --rm -it -v src:/src -v /var/run/docker.sock:/var/run/docker.sock 
 docker network connect devnet dev
 docker container start -i dev
 else
-docker exec -it dev bash
+docker exec -it dev bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"
 fi
