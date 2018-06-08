@@ -7,15 +7,18 @@ wait_timeout()
   cat /proc/$p/cmdline
   echo
   local timeout=$2
+  local should_kill=1
   while [ $timeout -ne 0 ]; do
     sleep 1
     if ! test -d /proc/$p ; then
       echo "PID $p finishes"
+      should_kill=0
       break
     fi
     timeout=$((timeout-1))
   done
-  if test -d /proc/$p ; then
+  if [ $should_kill -eq 1 ]; then
+    cat /proc/$p/cmdline
     echo "PID $p timeout, kill" 
     kill -KILL $p
   fi

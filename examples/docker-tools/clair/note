@@ -1,0 +1,8 @@
+coreos provided, database and analyzer for container image vulnerability
+
+
+can use this one for convenient usage:
+https://github.com/arminc/clair-local-scan
+
+
+Issue: pass --ip "docker0-ip" option instead of using 127.0.0.1, otherwise it will fail with http 400 problem

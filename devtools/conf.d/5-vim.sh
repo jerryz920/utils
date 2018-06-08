@@ -27,19 +27,6 @@ sudo update-alternatives --set editor /usr/bin/vim
 sudo update-alternatives --install /usr/bin/vi vi /usr/bin/vim 1
 sudo update-alternatives --set vi /usr/bin/vim
 cd $WORKDIR
-
-mkdir -p ~/.vim/bundle
-if ! [ -d ~/.vim/bundle/Vundle.vim ] ; then
-  git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/Vundle.vim
-fi
-cp $WORKDIR/general/vimrc ~/.vimrc
-vim +PluginInstall +qall &
-pid=`jobs -p`
-wait_timeout $pid 120
-vim +GoInstallBinaries +qall &
-pid=`jobs -p`
-wait_timeout $pid 120
-cd $HOME/.vim/bundle/YouCompleteMe
-python install.py --clang-completer --gocode-completer
-cd $WORKDIR
+mkdir -p ~/.vim/
 cp $WORKDIR/general/ycm_extra_conf.py ~/.vim/.ycm_extra_conf.py
+cp $WORKDIR/general/vimrc ~/.vimrc

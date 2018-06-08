@@ -5,6 +5,7 @@
 "" general setting
 set backspace=2
 set linebreak
+set encoding=utf8
 set whichwrap=b,s,<,>,[,]
 set listchars=tab:.\ ,trail:-
 set hidden
@@ -151,6 +152,8 @@ set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
+" Java is really slow with syntastic, disable it.
+au FileType java,scala let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 "au FileType latex,tex let g:syntastic_check_on_open = 0
 "au FileType latex,tex let g:syntastic_check_on_wq = 0
@@ -303,5 +306,17 @@ endif
 
 " jedi
 let g:jedi#show_call_signatures = "1"
+let g:ycm_python_binary_path = "/usr/bin/python3"
 
-
+let g:ycm_filetype_blacklist = {
+          \ 'tagbar' : 1,
+          \ 'qf' : 1,
+          \ 'notes' : 1,
+          \ 'markdown' : 1,
+          \ 'unite' : 1,
+          \ 'text' : 1,
+          \ 'vimwiki' : 1,
+          \ 'pandoc' : 1,
+          \ 'infolog' : 1,
+          \ 'mail' : 1
+          \}
