@@ -1,0 +1,85 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+static list<string> s = [](){
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    return list<string>();
+}();  
+
+// Algorithm:
+
+class Solution {
+public:
+    
+    TreeNode* build(vector<int> &pre, vector<int> &in, int &pre_index, int &in_index, int val) {
+        if (pre_index >= pre.size() || in[in_index] == val) return nullptr;
+        TreeNode *n = new TreeNode(pre[pre_index++]);
+        n->left = build(pre, in, pre_index, in_index, n->val);
+        ++in_index;
+        n->right = build(pre, in, pre_index, in_index, val);
+        return n;
+    }
+    
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int pre_index = 0, in_index = 0;
+        return build(preorder, inorder, pre_index, in_index, INT_MAX);
+    }
+};
+
+/*
+Proof: 
+
+	we prove following fact:
+	if input constraints are satisfied:
+	1. pre_index points to a subtree's root in 'pre',
+	2. in_index points to a subtree's leftmost element in 'in',
+	3. val is:
+		3.1 the value of its own root if it is building left subtree,
+		3.2 parent value if it is building right subtree
+
+	then build will construct a correct subtree, assuming it
+	has l element, then output conditions are satisified:
+	1. pre_index = entrance pre_index + l
+	2. in_index = entrance in_index + l
+
+	base: build satisfies the condition for 1-element tree
+
+	induction step: assume build works for <= n-1 element tree defined by pre and in
+	then the entrance using 0, 0, INT_MAX satisfies the input constraints (assume there is a virtual parent, and the root is right child of it)
+	for the first build, 
+	1. input pre_index = 1, which is the left subtree root because of preorder relation
+	2. input in_index = 0, is leftmost element of left subtree as well because of inorder relation
+	3. val = left subtree's root, and it is building a left subtree
+	4. for left subtree it can have at most n-1 element, and the subarray of pre and in excluding
+	the root and any node in right sibling is still legit preorder and inorder array.
+
+	Thus by assumption the first build outputs a correct left subtree with l_left elements.
+	Further, 
+	  pre_index = input pre_index + l_left + 1,
+	  in_index = input in_index + l_left, and after ++ operation it is input in_index + l_left + 1 as well.
+
+	Apparently according to preorder and inorder relation, pre_index now
+	points at right subtree's root, and so does in_index (They both skipped
+	the entire left subtree and root).
+
+	and val is the parent value and now we build the right subtree. Same thing, right subtree can have
+	at most n-1 element, and the inorder and preorder relation preserves as we exclude root and leftsubtree.
+	Thus by assumption the second build will build a correct right subtree with l_right elements. And
+	we have:
+	pre_index = 1st pre_index + l_right = input pre_index + l_left + l_right + 1
+	in_index = 1st in_index + l_right = input in_index + l_left + l_right + 1
+
+	Since l_left + l_right + 1 = length of current tree, and the input pre_index and in_index are all 0,
+	this means we have completed the proof that build will produce a correct n-element tree as well as
+	the correct output value.
+
+*/
+
