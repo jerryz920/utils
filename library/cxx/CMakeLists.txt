@@ -11,8 +11,9 @@ include_directories(PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 enable_testing()
 add_subdirectory(config)
+add_subdirectory(containers)
 
-add_library(jutils SHARED version.cc $<TARGET_OBJECTS:jutils-config> )
+add_library(jutils SHARED version.cc $<TARGET_OBJECTS:jutils-config> $<TARGET_OBJECTS:jutils-containers>)
 #set_property(TARGET jutils PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 file(GLOB testfiles RELATIVE ${PROJECT_SOURCE_DIR} tests/test-*.cc)
@@ -20,7 +21,9 @@ foreach(fullname ${testfiles})
   STRING(REGEX REPLACE "[^/]*/" "" testfile "${fullname}")
   string(REGEX MATCH "^(.*)\\.cc$" dummy ${testfile})
   set(testname ${CMAKE_MATCH_1})
+  message("what ${testname}")
   add_executable(${testname} ${fullname})
+  target_link_libraries(${testname} jutils)
   add_test(NAME ${testname}
   COMMAND ${testname})
 endforeach(fullname)
