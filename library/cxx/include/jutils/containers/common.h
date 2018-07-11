@@ -7,6 +7,7 @@
 #include <utility>
 #include <memory>
 #include <string>
+#include <tuple>
 
 /*
  * TODO:
@@ -73,11 +74,13 @@ struct Shower<std::string> {
 
 template <typename T1, typename T2>
 struct Shower<std::pair<T1, T2>> {
+  typedef typename std::remove_const<T1>::type RT1;
+  typedef typename std::remove_const<T2>::type RT2;
   void operator () (const std::pair<T1, T2> &v) const {
     putchar('(');
-    Shower<T1>()(v.first);
+    Shower<RT1>()(v.first);
     putchar(',');
-    Shower<T2>()(v.second);
+    Shower<RT2>()(v.second);
     putchar(')');
   }
 };
@@ -85,16 +88,18 @@ struct Shower<std::pair<T1, T2>> {
 
 template <size_t idx, typename ...Tps>
 struct TupleShowerImpl {
+  typedef typename std::remove_const<typename std::tuple_element<idx, std::tuple<Tps...>>::type>::type RT;
   void operator() (const std::tuple<Tps...> &v) const {
     TupleShowerImpl<idx - 1, Tps...>()(v);
     putchar(',');
-    Shower<std::tuple_element<idx, std::tuple<Tps...>>>()(std::get<idx>(v));
+    Shower<RT>()(std::get<idx>(v));
   }
 };
 template <typename ...Tps>
 struct TupleShowerImpl<0, Tps...> {
+  typedef typename std::remove_const<typename std::tuple_element<0, std::tuple<Tps...>>::type>::type RT;
   void operator() (const std::tuple<Tps...> &v) const {
-    Shower<std::tuple_element<0, std::tuple<Tps...>>>()(std::get<0>(v));
+    Shower<RT>()(std::get<0>(v));
   }
 };
 
