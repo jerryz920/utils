@@ -36,4 +36,8 @@ vim +PluginInstall +qall
 vim +GoInstallBinaries +qall
 cd $HOME/.vim/bundle/YouCompleteMe
 python install.py --clang-completer --gocode-completer
-docker commit develop dev
+
+if [[ x"$1" == x ]]; then
+  # in Docker, commit the change
+  docker commit develop dev
+fi

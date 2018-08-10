@@ -1,3 +1,8 @@
+
+absname=`readlink -f $0`
+dirname=`dirname $absname`
+cd $dirname
+
 cd time; gcc -O3 time.c -o jtime; cp jtime /usr/bin/; cd ..
 apt-get update
 apt-get install python-pip

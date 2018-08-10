@@ -2,18 +2,29 @@
 
 tag=${1:-latest}
 
-echo "Creating the src volume"
-docker volume create src
+echo "Creating the src directory, home link, and a named volume"
+mkdir -p /src/
+# hard code, whatever.
+chown zy:zy /src
+ln -sf /src ~/dev
+ln -sf /src/goroot ~/goroot
+docker volume create -d local -o o=bind -o device=/src src
 
+echo "Copying the bash configuration and local vim completion"
+cp general/bashrc ~/.bashrc
+
+# link the home dev path to src
 echo "Creating development network"
 docker network create --attachable devnet
 
 echo "Building work environment image"
 docker build -t dev .
 
-
 echo "Do some stupid vim setup"
 docker run -it --rm -v src:/src --name develop -v /var/run/docker.sock:/var/run/docker.sock dev:${tag} setup_vim.sh
+
+echo "Repeat the vim setup for external environment, now the /src should already have go dependency setup"
+bin/setup_vim.sh local
 
 echo "Setting up repository for the first time"
 docker run -it --rm -v src:/src dev:${tag} setup_repo.sh
