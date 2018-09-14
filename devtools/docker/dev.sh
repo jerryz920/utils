@@ -19,8 +19,8 @@ install_all()
   done
 }
 install_all
-bin/setup_vim.sh
-bin/setup_repo.sh
+../bin/setup_vim.sh
+../bin/setup_repo.sh
 
 #conf.d/0-base.sh
 #conf.d/1-go.sh

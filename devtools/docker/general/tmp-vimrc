@@ -1,0 +1,72 @@
+"==================================================
+""                my vimrc
+"==================================================
+"
+"" general setting
+set backspace=2
+set linebreak
+set encoding=utf8
+set whichwrap=b,s,<,>,[,]
+set listchars=tab:.\ ,trail:-
+set hidden
+set scrolloff=7
+set ignorecase
+set noerrorbells
+set novisualbell
+set t_vb=
+set wildmenu
+set list
+set showmatch
+set mat=1 "match time
+set smartindent
+set shiftwidth=2
+set autoindent
+set completeopt=longest,menu
+set autoread
+set gdefault
+" status setting
+set statusline=[%F]%y%r%m%*%=[Line:%l/%L,Column:%c][%p%%]
+set laststatus=2
+set ruler
+"let mapleader='\'
+"set sessionoptions-=curdir
+"set sessionoptions+=sesdir
+
+set undofile
+
+filetype off                   " required!
+
+
+" let Vundle manage Vundle
+" required! 
+
+" My Bundles here:
+set rtp+=~/.vim/bundle/Vundle.vim,~/.vim/bundle/YouCompleteMe
+call vundle#begin()
+"
+" original repos on github
+"Bundle 'scrooloose/syntastic'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'fatih/vim-go'
+Plugin 'nsf/gocode', {'rtp': 'vim/'}
+Plugin 'davidhalter/jedi-vim' 
+Plugin 'vim-syntastic/syntastic'
+"Bundle 'Lokaltog/vim-easymotion'
+"Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+"Bundle 'scrooloose/syntastic'
+" vim-scripts repos
+"Bundle 'L9'
+"Bundle 'FuzzyFinder'
+" ...
+call vundle#end()
+
+
+filetype plugin indent on     " required!
+
+
+"
+" General programming setting
+"
+syn on
+filetype plugin on
+filetype indent on

@@ -5,10 +5,11 @@ tag=${1:-latest}
 echo "entering the working mode"
 docker container ls -a --format "{{.Names}}" | grep '\<dev\>'
 if [ $? -ne 0 ]; then
-docker create --rm -t -v /src:/src -v /var/run/docker.sock:/var/run/docker.sock --hostname dev.local --name dev dev:${tag} bash
+mkdir -p /shared
+docker create --user `id -u`:`id -g` --group-add docker --group-add sudo --rm -t -v src:/src -v /shared:/shared -v /var/run/docker.sock:/var/run/docker.sock --hostname dev.local --name dev dev:${tag} bash
 docker network connect devnet dev
 docker container start dev
-docker exec -it dev bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"
+docker exec --user `id -u`:`id -g` -it dev bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"
 else
-docker exec -it dev bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"
+docker exec --user `id -u`:`id -g` -it dev bash -c "export COLUMNS=`tput cols`; export LINES=`tput lines`; exec bash"
 fi
