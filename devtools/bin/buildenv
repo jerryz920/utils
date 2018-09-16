@@ -1,8 +1,9 @@
 #!/bin/bash
 
-tag=${1:-latest}
 
-STORAGE=/mnt/data/zynewdev
+tag=${2:-latest}
+
+STORAGE=${1:-/mnt/data/zynewdev}
 echo "Creating the src directory, home link, and a named volume"
 sudo mkdir -p $STORAGE
 # hard code, whatever.
