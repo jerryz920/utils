@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# should execute this file in the directory of devtools
 
 tag=${2:-latest}
 
@@ -13,7 +14,7 @@ ln -sf $STORAGE/goroot ~/goroot
 docker volume create -d local -o o=bind -o device=$STORAGE src
 
 echo "Copying the bash configuration and local vim completion"
-cp general/bashrc ~/.bashrc
+cp docker/general/bashrc ~/.bashrc
 
 # link the home dev path to src
 echo "Creating development network"

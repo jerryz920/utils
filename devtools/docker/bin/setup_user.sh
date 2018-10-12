@@ -2,6 +2,16 @@
 
 username=${3:-devuser}
 usergroup=${4:-devgroup}
+if [ $1 -eq 0 ] || [[ $3 == "$root" ]]; then
+
+  if ! [ -f /usr/local/bin/commit ]; then
+    if [ -f /usr/local/bin/commit.sh ]; then
+      ln -s /usr/local/bin/commit.sh /usr/local/bin/commit
+      chmod +x /usr/local/bin/commit
+    fi
+  fi
+  exit 0
+fi
 groupadd --non-unique -g $2 $usergroup
 useradd -u $1 -g $usergroup -m $username
 
