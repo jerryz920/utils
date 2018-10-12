@@ -16,6 +16,7 @@ docker volume create -d local -o o=bind -o device=$STORAGE src
 echo "Copying the bash configuration and local vim completion"
 cp docker/general/bashrc ~/.bashrc
 cp docker/general/vimrc ~/.vimrc
+cp docker/general/ycm_extra_conf.py ~/.vim/.ycm_extra_conf.py
 
 # link the home dev path to src
 echo "Creating development network"
