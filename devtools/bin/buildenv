@@ -40,5 +40,5 @@ echo "Repeat the vim setup for external environment, now the /src should already
 bin/setup_vim.sh local
 
 echo "Setting up repository for the first time"
-docker run --user $USER:$USER --group-add docker --group-add sudo -it --rm -v src:/src dev:${tag} -v /var/run/docker.sock:/var/run/docker.sock setup_repo.sh
+docker run --user $USER:$USER --group-add docker --group-add sudo -it --rm -v src:/src -v /var/run/docker.sock:/var/run/docker.sock dev:${tag} setup_repo.sh
 
