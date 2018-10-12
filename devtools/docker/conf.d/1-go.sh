@@ -1,8 +1,9 @@
 #!/bin/bash
 
 mkdir -p $GOROOT
-wget https://redirector.gvt1.com/edgedl/go/go$GO_VERSION.linux-amd64.tar.gz
+wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz
 tar xf go$GO_VERSION.linux-amd64.tar.gz -C $GOROOT
+
 mv $GOROOT/go/* $GOROOT/
 ln -s $GOROOT $HOME/goroot
 rm -f go$GO_VERSION.linux-amd64.tar.gz
