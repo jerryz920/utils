@@ -16,7 +16,7 @@ modify_origin()
 # setup kubernetes
 go get github.com/kubernetes/kubernetes
 cd $GOPATH/src/github.com/kubernetes/kubernetes
-modify_origin kubernetes
+modify_origin kubernetes tapcon
 
 # kubernetes need special hack to navigate correctly as its original repository is k8s.io
 mkdir -p $GOPATH/src/k8s.io/
