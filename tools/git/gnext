@@ -7,10 +7,8 @@ ensure_git_history() {
   git log --pretty=format:%h > $GIT_HISTORY_FILE
   git checkout $current
 }
-echo hi
 if ! [ -f $GIT_HISTORY_FILE ]; then
   ensure_git_history
 fi
 next=`grep -A1 $current $GIT_HISTORY_FILE | tail -n 1`
-echo next commit is $next 
 git checkout $next
