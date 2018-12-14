@@ -1,0 +1,14 @@
+#!/bin/bash
+
+GIT_HISTORY_FILE=.git_edit_history
+current=`git rev-parse --short HEAD`
+ensure_git_history() {
+  git checkout master
+  git log --pretty=format:%h > $GIT_HISTORY_FILE
+  git checkout $current
+}
+if ! [ -f $GIT_HISTORY_FILE ]; then
+  ensure_git_history
+fi
+head=`tail -n1 $GIT_HISTORY_FILE`
+git checkout $head
