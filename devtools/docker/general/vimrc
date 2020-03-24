@@ -46,6 +46,8 @@ call vundle#begin()
 "
 " original repos on github
 "Bundle 'scrooloose/syntastic'
+Plugin 'VundleVim/Vundle.vim'
+
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'fatih/vim-go'
 Plugin 'nsf/gocode', {'rtp': 'vim/'}
